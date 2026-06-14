@@ -1,10 +1,493 @@
 <!DOCTYPE html>
-<html>
+<html lang="ja">
 <head>
-<title>Trail Tail</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Trail Tail｜ペット写真から作るオリジナルグッズ</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Hiragino Sans", "Yu Gothic", sans-serif;
+      color: #2b2926;
+      background: #f8f3ea;
+      line-height: 1.8;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    img {
+      max-width: 100%;
+      display: block;
+    }
+
+    header {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      z-index: 1000;
+      background: rgba(248, 243, 234, 0.95);
+      border-bottom: 1px solid #e0d6c8;
+    }
+
+    .header-inner {
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 14px 18px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .logo {
+      font-size: 20px;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+    }
+
+    .menu-btn {
+      width: 42px;
+      height: 34px;
+      border: none;
+      background: transparent;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-around;
+      cursor: pointer;
+    }
+
+    .menu-btn span {
+      display: block;
+      height: 3px;
+      background: #2b2926;
+      border-radius: 3px;
+    }
+
+    nav {
+      display: none;
+      background: #fffaf2;
+      border-top: 1px solid #e0d6c8;
+    }
+
+    nav.open {
+      display: block;
+    }
+
+    nav ul {
+      list-style: none;
+    }
+
+    nav li {
+      border-bottom: 1px solid #eadfce;
+    }
+
+    nav a {
+      display: block;
+      padding: 14px 22px;
+      font-weight: 700;
+    }
+
+    main {
+      padding-top: 64px;
+    }
+
+    section {
+      padding: 70px 20px;
+    }
+
+    .container {
+      max-width: 960px;
+      margin: 0 auto;
+    }
+
+    .hero {
+      min-height: 90vh;
+      display: flex;
+      align-items: center;
+      background:
+        linear-gradient(rgba(248,243,234,0.76), rgba(248,243,234,0.95)),
+        url("images/hero.jpg") center/cover no-repeat;
+      text-align: center;
+    }
+
+    .hero h1 {
+      font-size: 34px;
+      line-height: 1.35;
+      margin-bottom: 20px;
+    }
+
+    .hero p {
+      font-size: 16px;
+      margin-bottom: 30px;
+    }
+
+    .btn-wrap {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .btn {
+      display: block;
+      padding: 15px 22px;
+      border-radius: 999px;
+      font-weight: 800;
+      text-align: center;
+      border: 2px solid #2b2926;
+      background: #2b2926;
+      color: #fff;
+    }
+
+    .btn.sub {
+      background: #fffaf2;
+      color: #2b2926;
+    }
+
+    .section-title {
+      font-size: 26px;
+      text-align: center;
+      margin-bottom: 18px;
+      letter-spacing: 0.06em;
+    }
+
+    .section-lead {
+      text-align: center;
+      margin-bottom: 36px;
+      color: #5c554d;
+    }
+
+    .cards {
+      display: grid;
+      gap: 18px;
+    }
+
+    .card {
+      background: #fffaf2;
+      border: 1px solid #e3d7c8;
+      border-radius: 22px;
+      padding: 24px;
+      box-shadow: 0 8px 20px rgba(50, 40, 30, 0.06);
+    }
+
+    .card h3 {
+      font-size: 20px;
+      margin-bottom: 10px;
+    }
+
+    .flow {
+      counter-reset: step;
+      display: grid;
+      gap: 18px;
+    }
+
+    .flow-item {
+      position: relative;
+      background: #fffaf2;
+      border-radius: 20px;
+      padding: 24px 24px 24px 70px;
+      border: 1px solid #e3d7c8;
+    }
+
+    .flow-item::before {
+      counter-increment: step;
+      content: counter(step);
+      position: absolute;
+      left: 22px;
+      top: 24px;
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      background: #2b2926;
+      color: #fff;
+      display: grid;
+      place-items: center;
+      font-weight: 800;
+    }
+
+    .cta {
+      background: #2b2926;
+      color: #fff;
+      text-align: center;
+    }
+
+    .cta .section-lead {
+      color: #e8ded0;
+    }
+
+    .cta .btn {
+      background: #fffaf2;
+      color: #2b2926;
+      border-color: #fffaf2;
+    }
+
+    .contact-box {
+      background: #fffaf2;
+      border-radius: 22px;
+      padding: 24px;
+      border: 1px solid #e3d7c8;
+    }
+
+    .law {
+      font-size: 14px;
+      background: #efe5d7;
+    }
+
+    .law dl {
+      display: grid;
+      gap: 12px;
+    }
+
+    .law dt {
+      font-weight: 800;
+    }
+
+    footer {
+      text-align: center;
+      padding: 28px 20px;
+      background: #2b2926;
+      color: #fff;
+      font-size: 13px;
+    }
+
+    @media (min-width: 768px) {
+      .menu-btn {
+        display: none;
+      }
+
+      nav {
+        display: block;
+        background: transparent;
+        border: none;
+      }
+
+      nav ul {
+        display: flex;
+        gap: 18px;
+      }
+
+      nav li {
+        border: none;
+      }
+
+      nav a {
+        padding: 0;
+        font-size: 14px;
+      }
+
+      .hero h1 {
+        font-size: 52px;
+      }
+
+      .hero p {
+        font-size: 18px;
+      }
+
+      .btn-wrap {
+        flex-direction: row;
+        justify-content: center;
+      }
+
+      .cards {
+        grid-template-columns: repeat(3, 1fr);
+      }
+
+      .flow {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+  </style>
 </head>
+
 <body>
-<h1>Trail Tail</h1>
-<p>公開テスト</p>
+
+<header>
+  <div class="header-inner">
+    <a href="#top" class="logo">Trail Tail</a>
+
+    <button class="menu-btn" id="menuBtn" aria-label="メニューを開く">
+      <span></span>
+      <span></span>
+      <span></span>
+    </button>
+
+    <nav id="nav">
+      <ul>
+        <li><a href="#items">アイテム</a></li>
+        <li><a href="#flow">制作の流れ</a></li>
+        <li><a href="#base">BASE</a></li>
+        <li><a href="#line">公式LINE</a></li>
+        <li><a href="#contact">お問い合わせ</a></li>
+        <li><a href="#law">特商法</a></li>
+      </ul>
+    </nav>
+  </div>
+</header>
+
+<main id="top">
+
+  <section class="hero">
+    <div class="container">
+      <h1>うちの子を、<br>ずっとそばに。</h1>
+      <p>
+        Trail Tailは、ペットの写真をもとに<br>
+        モノクロデザインのオリジナルグッズを制作するブランドです。
+      </p>
+      <div class="btn-wrap">
+        <a class="btn" href="#line">LINEで相談する</a>
+        <a class="btn sub" href="#base">商品を見る</a>
+      </div>
+    </div>
+  </section>
+
+  <section id="items">
+    <div class="container">
+      <h2 class="section-title">ITEMS</h2>
+      <p class="section-lead">写真からデザインを制作し、日常で使えるアイテムに仕上げます。</p>
+
+      <div class="cards">
+        <div class="card">
+          <h3>Tシャツ</h3>
+          <p>シンプルに着やすい、モノクロデザインの定番アイテム。</p>
+        </div>
+        <div class="card">
+          <h3>トートバッグ</h3>
+          <p>お散歩やお買い物にも使いやすい、毎日持てるグッズ。</p>
+        </div>
+        <div class="card">
+          <h3>その他グッズ</h3>
+          <p>マグカップや雑貨など、順次アイテムを追加予定です。</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="flow">
+    <div class="container">
+      <h2 class="section-title">ORDER FLOW</h2>
+      <p class="section-lead">ご注文から制作までの流れです。</p>
+
+      <div class="flow">
+        <div class="flow-item">
+          <h3>LINEで写真を送る</h3>
+          <p>お気に入りのペット写真を公式LINEから送ってください。</p>
+        </div>
+        <div class="flow-item">
+          <h3>デザイン制作</h3>
+          <p>写真をもとに、Trail Tailらしいモノクロデザインに仕上げます。</p>
+        </div>
+        <div class="flow-item">
+          <h3>確認</h3>
+          <p>完成イメージをご確認いただき、問題なければ制作へ進みます。</p>
+        </div>
+        <div class="flow-item">
+          <h3>商品をお届け</h3>
+          <p>BASEでご購入後、制作・発送いたします。</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="base" class="cta">
+    <div class="container">
+      <h2 class="section-title">ONLINE STORE</h2>
+      <p class="section-lead">
+        商品の購入はBASEショップからお願いいたします。
+      </p>
+      <a class="btn" href="BASE_URL" target="_blank" rel="noopener">BASEショップを見る</a>
+    </div>
+  </section>
+
+  <section id="line">
+    <div class="container">
+      <h2 class="section-title">OFFICIAL LINE</h2>
+      <p class="section-lead">
+        写真の送付、注文前の相談、制作イメージの確認は公式LINEから。
+      </p>
+      <div class="btn-wrap">
+        <a class="btn" href="LINE_URL" target="_blank" rel="noopener">公式LINEを友だち追加</a>
+      </div>
+    </div>
+  </section>
+
+  <section id="contact">
+    <div class="container">
+      <h2 class="section-title">CONTACT</h2>
+      <div class="contact-box">
+        <p>
+          お問い合わせは公式LINE、またはInstagramのDMよりお願いいたします。
+        </p>
+        <p>
+          オーダー内容、写真選び、納期についてもお気軽にご相談ください。
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section id="law" class="law">
+    <div class="container">
+      <h2 class="section-title">特定商取引法に基づく表記</h2>
+
+      <dl>
+        <dt>販売事業者</dt>
+        <dd>Trail Tail</dd>
+
+        <dt>運営責任者</dt>
+        <dd>記載予定</dd>
+
+        <dt>所在地</dt>
+        <dd>請求があった場合、遅滞なく開示いたします。</dd>
+
+        <dt>販売価格</dt>
+        <dd>各商品ページに記載</dd>
+
+        <dt>商品代金以外の必要料金</dt>
+        <dd>送料、決済手数料等が発生する場合があります。</dd>
+
+        <dt>お支払い方法</dt>
+        <dd>BASEショップに準じます。</dd>
+
+        <dt>返品・交換</dt>
+        <dd>受注制作商品のため、お客様都合による返品・交換はお受けできません。</dd>
+
+        <dt>お問い合わせ</dt>
+        <dd>公式LINEよりお願いいたします。</dd>
+      </dl>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <p>&copy; Trail Tail. All Rights Reserved.</p>
+</footer>
+
+<script>
+  const menuBtn = document.getElementById("menuBtn");
+  const nav = document.getElementById("nav");
+  const navLinks = nav.querySelectorAll("a");
+
+  menuBtn.addEventListener("click", () => {
+    nav.classList.toggle("open");
+  });
+
+  navLinks.forEach(link => {
+    link.addEventListener("click", () => {
+      nav.classList.remove("open");
+    });
+  });
+</script>
+
 </body>
 </html>
