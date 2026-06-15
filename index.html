@@ -59,18 +59,40 @@
     }
 
     .menu-btn {
-      width: 42px;
-      height: 34px;
-      border: none;
-      background: transparent;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-around;
-      cursor: pointer;
-    }
+  width: 42px;
+  height: 34px;
+  border: none;
+  background: transparent;
+  position: relative;
+  cursor: pointer;
+  z-index: 1001;
+}
 
-    .menu-btn.active span:nth-child(1) {
-  transform: rotate(45deg) translate(8px, 8px);
+.menu-btn span {
+  position: absolute;
+  left: 6px;
+  width: 30px;
+  height: 3px;
+  background: #2b2926;
+  border-radius: 3px;
+  transition: 0.25s;
+}
+
+.menu-btn span:nth-child(1) {
+  top: 8px;
+}
+
+.menu-btn span:nth-child(2) {
+  top: 15.5px;
+}
+
+.menu-btn span:nth-child(3) {
+  top: 23px;
+}
+
+.menu-btn.active span:nth-child(1) {
+  top: 15.5px;
+  transform: rotate(45deg);
 }
 
 .menu-btn.active span:nth-child(2) {
@@ -78,19 +100,9 @@
 }
 
 .menu-btn.active span:nth-child(3) {
-  transform: rotate(-45deg) translate(8px, -8px);
+  top: 15.5px;
+  transform: rotate(-45deg);
 }
-
-.menu-btn span {
-  transition: 0.25s;
-}
-
-    .menu-btn span {
-      display: block;
-      height: 3px;
-      background: #2b2926;
-      border-radius: 3px;
-    }
 
     .desktop-nav {
       display: none;
