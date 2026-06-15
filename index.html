@@ -112,8 +112,50 @@
       margin: 0 auto;
     }
 
+    .top-slider {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+  padding: 0;
+}
+
+.top-slide {
+  position: absolute;
+  inset: 0;
+  background-repeat: no-repeat;
+  background-position: center center;
+  background-size: cover;
+  opacity: 0;
+  animation: topFade 18s infinite;
+}
+
+.top-slide.slide1 {
+  background-image: url("images/photo01.jpg");
+  animation-delay: 0s;
+}
+
+.top-slide.slide2 {
+  background-image: url("images/photo02.jpg");
+  animation-delay: 6s;
+}
+
+.top-slide.slide3 {
+  background-image: url("images/photo03.jpg");
+  animation-delay: 12s;
+}
+
+@keyframes topFade {
+  0% { opacity: 0; }
+  8% { opacity: 1; }
+  30% { opacity: 1; }
+  38% { opacity: 0; }
+  100% { opacity: 0; }
+}
+
+
     .hero {
-      min-height: 90vh;
+      min-height: 50vh;
       display: flex;
       align-items: center;
       background:
@@ -307,6 +349,36 @@
         grid-template-columns: repeat(2, 1fr);
       }
     }
+
+      .law-details {
+  margin-top: 30px;
+  text-align: center;
+}
+
+.law-details summary {
+  list-style: none;
+  cursor: pointer;
+  text-align: center;
+  font-size: 14px;
+  color: #666;
+  text-decoration: underline;
+}
+
+.law-details summary::-webkit-details-marker {
+  display: none;
+}
+
+.law-content {
+  margin-top: 20px;
+  font-size: 14px;
+  line-height: 1.8;
+  color: #444;
+  text-align: center;
+}
+
+.law-content p {
+  margin-bottom: 18px;
+}
   </style>
 </head>
 
@@ -335,6 +407,12 @@
 </header>
 
 <main id="top">
+
+    <section class="top-slider">
+  <div class="top-slide slide1"></div>
+  <div class="top-slide slide2"></div>
+  <div class="top-slide slide3"></div>
+</section>
 
   <section class="hero">
     <div class="container">
@@ -434,37 +512,36 @@
     </div>
   </section>
 
-  <section id="law" class="law">
-    <div class="container">
-      <h2 class="section-title">特定商取引法に基づく表記</h2>
+  <section id="law">
 
-      <dl>
-        <dt>販売事業者</dt>
-        <dd>Trail Tail</dd>
+  <details class="law-details">
 
-        <dt>運営責任者</dt>
-        <dd>和田孝一</dd>
+    <summary>
+      特定商取引法に基づく表記
+    </summary>
 
-        <dt>所在地</dt>
-        <dd>大阪府河内長野市高向977-2</dd>
+    <div class="law-content">
 
-        <dt>販売価格</dt>
-        <dd>各商品ページに記載</dd>
+      <p><strong>販売事業者</strong><br>
+      Trail Tail</p>
 
-        <dt>商品代金以外の必要料金</dt>
-        <dd>送料、決済手数料等が発生する場合があります。</dd>
+      <p><strong>運営責任者</strong><br>
+      和田 孝一</p>
 
-        <dt>お支払い方法</dt>
-        <dd>BASEショップに準じます。</dd>
+      <p><strong>所在地</strong><br>
+      大阪府河内長野市高向977-2</p>
 
-        <dt>返品・交換</dt>
-        <dd>受注制作商品のため、お客様都合による返品・交換はお受けできません。</dd>
+      <p><strong>販売価格</strong><br>
+      各商品ページに記載</p>
 
-        <dt>お問い合わせ</dt>
-        <dd>公式LINEよりお願いいたします。</dd>
-      </dl>
+      <p><strong>返品・交換</strong><br>
+      受注制作商品のため返品不可</p>
+
     </div>
-  </section>
+
+  </details>
+
+</section>
 
 </main>
 
