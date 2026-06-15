@@ -4,6 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Trail Tail｜ペット写真から作るオリジナルグッズ</title>
+
   <style>
     * {
       box-sizing: border-box;
@@ -68,6 +69,22 @@
       cursor: pointer;
     }
 
+    .menu-btn.active span:nth-child(1) {
+  transform: rotate(45deg) translate(8px, 8px);
+}
+
+.menu-btn.active span:nth-child(2) {
+  opacity: 0;
+}
+
+.menu-btn.active span:nth-child(3) {
+  transform: rotate(-45deg) translate(8px, -8px);
+}
+
+.menu-btn span {
+  transition: 0.25s;
+}
+
     .menu-btn span {
       display: block;
       height: 3px;
@@ -75,27 +92,80 @@
       border-radius: 3px;
     }
 
-    nav {
+    .desktop-nav {
       display: none;
-      background: #fffaf2;
-      border-top: 1px solid #e0d6c8;
     }
 
-    nav.open {
-      display: block;
-    }
-
-    nav ul {
+    .desktop-nav ul {
       list-style: none;
     }
 
-    nav li {
+    .desktop-nav li {
       border-bottom: 1px solid #eadfce;
     }
 
-    nav a {
+    .desktop-nav a {
       display: block;
       padding: 14px 22px;
+      font-weight: 700;
+    }
+
+    .mobile-menu-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.3);
+      opacity: 0;
+      pointer-events: none;
+      transition: .25s;
+      z-index: 998;
+    }
+
+    .mobile-menu-overlay.active {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .mobile-menu {
+      position: fixed;
+      top: 0;
+      right: -100%;
+      width: min(320px, 80vw);
+      height: 100%;
+      background: #fffaf2;
+      padding: 22px;
+      transition: .25s;
+      z-index: 999;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      border-left: 1px solid #e0d6c8;
+    }
+
+    .mobile-menu.active {
+      right: 0;
+    }
+
+    .close-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-bottom: 12px;
+      margin-bottom: 10px;
+      border-bottom: 1px solid #e0d6c8;
+    }
+
+    .close-btn {
+      background: none;
+      border: none;
+      font-size: 22px;
+      cursor: pointer;
+    }
+
+    .mobile-menu a {
+      display: block;
+      padding: 14px;
+      border: 1px solid #e0d6c8;
+      border-radius: 14px;
       font-weight: 700;
     }
 
@@ -113,46 +183,45 @@
     }
 
     .top-slider {
-  position: relative;
-  width: 100%;
-  aspect-ratio: 16 / 9;
-  overflow: hidden;
-  padding: 0;
-}
+      position: relative;
+      width: 100%;
+      aspect-ratio: 16 / 9;
+      overflow: hidden;
+      padding: 0;
+    }
 
-.top-slide {
-  position: absolute;
-  inset: 0;
-  background-repeat: no-repeat;
-  background-position: 50% 50%;
-  background-size: cover;
-  opacity: 0;
-  animation: topFade 18s infinite;
-}
+    .top-slide {
+      position: absolute;
+      inset: 0;
+      background-repeat: no-repeat;
+      background-position: 50% 50%;
+      background-size: cover;
+      opacity: 0;
+      animation: topFade 18s infinite;
+    }
 
-.top-slide.slide1 {
-  background-image: url("images/photo01.jpg");
-  animation-delay: 0s;
-}
+    .top-slide.slide1 {
+      background-image: url("images/photo01.jpg");
+      animation-delay: 0s;
+    }
 
-.top-slide.slide2 {
-  background-image: url("images/photo02.jpg");
-  animation-delay: 6s;
-}
+    .top-slide.slide2 {
+      background-image: url("images/photo02.jpg");
+      animation-delay: 6s;
+    }
 
-.top-slide.slide3 {
-  background-image: url("images/photo03.jpg");
-  animation-delay: 12s;
-}
+    .top-slide.slide3 {
+      background-image: url("images/photo03.jpg");
+      animation-delay: 12s;
+    }
 
-@keyframes topFade {
-  0% { opacity: 0; }
-  8% { opacity: 1; }
-  30% { opacity: 1; }
-  38% { opacity: 0; }
-  100% { opacity: 0; }
-}
-
+    @keyframes topFade {
+      0% { opacity: 0; }
+      8% { opacity: 1; }
+      30% { opacity: 1; }
+      38% { opacity: 0; }
+      100% { opacity: 0; }
+    }
 
     .hero {
       min-height: 50vh;
@@ -228,35 +297,27 @@
       margin-bottom: 10px;
     }
 
-
-
-    .section-lead {
-  text-align: center;
-  margin-bottom: 36px;
-  color: #5c554d;
-}
-
     #items {
-  background: #2b2926;
-}
+      background: #2b2926;
+    }
 
-#items .section-title {
-  color: #f8f3ea;
-}
+    #items .section-title {
+      color: #f8f3ea;
+    }
 
-#items .section-lead {
-  color: #d8cec1;
-}
+    #items .section-lead {
+      color: #d8cec1;
+    }
 
-#items .card {
-  background: #f8f3ea;
-  color: #2b2926;
-  border: 1px solid #e3d7c8;
-}
+    #items .card {
+      background: #f8f3ea;
+      color: #2b2926;
+      border: 1px solid #e3d7c8;
+    }
 
-#items .card h3 {
-  color: #2b2926;
-}
+    #items .card h3 {
+      color: #2b2926;
+    }
 
     .flow {
       counter-reset: step;
@@ -311,18 +372,34 @@
       border: 1px solid #e3d7c8;
     }
 
-    .law {
+    .law-details {
+      margin-top: 30px;
+      text-align: center;
+    }
+
+    .law-details summary {
+      list-style: none;
+      cursor: pointer;
+      text-align: center;
       font-size: 14px;
-      background: #efe5d7;
+      color: #666;
+      text-decoration: underline;
     }
 
-    .law dl {
-      display: grid;
-      gap: 12px;
+    .law-details summary::-webkit-details-marker {
+      display: none;
     }
 
-    .law dt {
-      font-weight: 800;
+    .law-content {
+      margin-top: 20px;
+      font-size: 14px;
+      line-height: 1.8;
+      color: #444;
+      text-align: center;
+    }
+
+    .law-content p {
+      margin-bottom: 18px;
     }
 
     footer {
@@ -338,24 +415,27 @@
         display: none;
       }
 
-      nav {
+      .desktop-nav {
         display: block;
-        background: transparent;
-        border: none;
       }
 
-      nav ul {
+      .desktop-nav ul {
         display: flex;
         gap: 18px;
       }
 
-      nav li {
+      .desktop-nav li {
         border: none;
       }
 
-      nav a {
+      .desktop-nav a {
         padding: 0;
         font-size: 14px;
+      }
+
+      .mobile-menu,
+      .mobile-menu-overlay {
+        display: none;
       }
 
       .hero h1 {
@@ -379,36 +459,6 @@
         grid-template-columns: repeat(2, 1fr);
       }
     }
-
-      .law-details {
-  margin-top: 30px;
-  text-align: center;
-}
-
-.law-details summary {
-  list-style: none;
-  cursor: pointer;
-  text-align: center;
-  font-size: 14px;
-  color: #666;
-  text-decoration: underline;
-}
-
-.law-details summary::-webkit-details-marker {
-  display: none;
-}
-
-.law-content {
-  margin-top: 20px;
-  font-size: 14px;
-  line-height: 1.8;
-  color: #444;
-  text-align: center;
-}
-
-.law-content p {
-  margin-bottom: 18px;
-}
   </style>
 </head>
 
@@ -418,13 +468,13 @@
   <div class="header-inner">
     <a href="#top" class="logo">Trail Tail</a>
 
-    <button class="menu-btn" id="menuBtn" aria-label="メニューを開く">
+    <button class="menu-btn" id="menuBtn" type="button" aria-label="メニューを開く" onclick="toggleMenu()">
       <span></span>
       <span></span>
       <span></span>
     </button>
 
-    <nav id="nav">
+    <nav class="desktop-nav" aria-label="メインメニュー">
       <ul>
         <li><a href="#items">アイテム</a></li>
         <li><a href="#flow">制作の流れ</a></li>
@@ -436,13 +486,28 @@
   </div>
 </header>
 
+<div class="mobile-menu-overlay" id="menuOverlay" onclick="closeMenu()"></div>
+
+<aside class="mobile-menu" id="mobileMenu" aria-label="スマホメニュー">
+  <div class="close-row">
+    <strong>Trail Tail</strong>
+    <button class="close-btn" type="button" aria-label="閉じる" onclick="closeMenu()">✕</button>
+  </div>
+
+  <a href="#items" onclick="closeMenu()">アイテム</a>
+  <a href="#flow" onclick="closeMenu()">制作の流れ</a>
+  <a href="#base" onclick="closeMenu()">BASE</a>
+  <a href="#line" onclick="closeMenu()">公式LINE</a>
+  <a href="#contact" onclick="closeMenu()">お問い合わせ</a>
+</aside>
+
 <main id="top">
 
-    <section class="top-slider">
-  <div class="top-slide slide1"></div>
-  <div class="top-slide slide2"></div>
-  <div class="top-slide slide3"></div>
-</section>
+  <section class="top-slider" aria-label="Trail Tail イメージ写真">
+    <div class="top-slide slide1"></div>
+    <div class="top-slide slide2"></div>
+    <div class="top-slide slide3"></div>
+  </section>
 
   <section class="hero">
     <div class="container">
@@ -459,7 +524,7 @@
   </section>
 
   <section id="items" class="cta">
-        <div class="container">
+    <div class="container">
       <h2 class="section-title">ITEMS</h2>
       <p class="section-lead">写真からデザインを制作し、日常で使えるアイテムに仕上げます。</p>
 
@@ -488,7 +553,7 @@
       <div class="flow">
         <div class="flow-item">
           <h3>アイテムを選ぶ</h3>
-          <p>BASEショップでお気に入りのアイテムをお選びください</p>
+          <p>BASEショップでお気に入りのアイテムをお選びください。</p>
         </div>
         <div class="flow-item">
           <h3>デザイン制作</h3>
@@ -543,35 +608,22 @@
   </section>
 
   <section id="law">
+    <details class="law-details">
+      <summary>特定商取引法に基づく表記</summary>
 
-  <details class="law-details">
+      <div class="law-content">
+        <p><strong>販売事業者</strong><br>Trail Tail</p>
 
-    <summary>
-      特定商取引法に基づく表記
-    </summary>
+        <p><strong>運営責任者</strong><br>和田 孝一</p>
 
-    <div class="law-content">
+        <p><strong>所在地</strong><br>大阪府河内長野市高向977-2</p>
 
-      <p><strong>販売事業者</strong><br>
-      Trail Tail</p>
+        <p><strong>販売価格</strong><br>各商品ページに記載</p>
 
-      <p><strong>運営責任者</strong><br>
-      和田 孝一</p>
-
-      <p><strong>所在地</strong><br>
-      大阪府河内長野市高向977-2</p>
-
-      <p><strong>販売価格</strong><br>
-      各商品ページに記載</p>
-
-      <p><strong>返品・交換</strong><br>
-      受注制作商品のため返品不可</p>
-
-    </div>
-
-  </details>
-
-</section>
+        <p><strong>返品・交換</strong><br>受注制作商品のため返品不可</p>
+      </div>
+    </details>
+  </section>
 
 </main>
 
@@ -580,18 +632,34 @@
 </footer>
 
 <script>
+  const menu = document.getElementById("mobileMenu");
+  const overlay = document.getElementById("menuOverlay");
   const menuBtn = document.getElementById("menuBtn");
-  const nav = document.getElementById("nav");
-  const navLinks = nav.querySelectorAll("a");
 
-  menuBtn.addEventListener("click", () => {
-    nav.classList.toggle("open");
-  });
+  function openMenu() {
+    menu.classList.add("active");
+    overlay.classList.add("active");
+    menuBtn.classList.add("active");
+    document.body.style.overflow = "hidden";
+  }
 
-  navLinks.forEach(link => {
-    link.addEventListener("click", () => {
-      nav.classList.remove("open");
-    });
+  function closeMenu() {
+    menu.classList.remove("active");
+    overlay.classList.remove("active");
+    menuBtn.classList.remove("active");
+    document.body.style.overflow = "";
+  }
+
+  function toggleMenu() {
+    if (menu.classList.contains("active")) {
+      closeMenu();
+    } else {
+      openMenu();
+    }
+  }
+
+  window.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") closeMenu();
   });
 </script>
 
