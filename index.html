@@ -479,6 +479,73 @@
         grid-template-columns: repeat(2, 1fr);
       }
     }
+
+    /* ITEMS2 専用 */
+
+#items2 .items2-grid {
+  display: flex;
+  gap: 14px;
+
+  overflow-x: auto;
+  overflow-y: hidden;
+
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+
+  padding-bottom: 10px;
+}
+
+#items2 .items2-grid::-webkit-scrollbar {
+  height: 8px;
+}
+
+#items2 .items2-grid::-webkit-scrollbar-thumb {
+  background: #d8cec1;
+  border-radius: 999px;
+}
+
+#items2 .items2-card {
+  flex: 0 0 85%;
+  scroll-snap-align: start;
+
+  background: #f8f3ea;
+  color: #2b2926;
+
+  border: 1px solid #e3d7c8;
+  border-radius: 22px;
+
+  overflow: hidden;
+  box-shadow: 0 8px 20px rgba(50,40,30,0.06);
+}
+
+#items2 .items2-image {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  object-fit: cover;
+}
+
+#items2 .items2-body {
+  padding: 20px;
+}
+
+#items2 .items2-body h3 {
+  margin-bottom: 10px;
+  font-size: 20px;
+}
+
+@media (min-width: 768px) {
+
+  #items2 .items2-grid {
+    display: grid;
+    grid-template-columns: repeat(3,1fr);
+    overflow: visible;
+  }
+
+  #items2 .items2-card {
+    flex: initial;
+  }
+
+}
   </style>
 </head>
 
@@ -496,7 +563,7 @@
 
     <nav class="desktop-nav" aria-label="メインメニュー">
       <ul>
-        <li><a href="#items">アイテム</a></li>
+        <li><a href="#items2">アイテム</a></li>
         <li><a href="#flow">制作の流れ</a></li>
         <li><a href="#base">BASE SHOP</a></li>
         <li><a href="#line">公式LINE</a></li>
@@ -515,7 +582,7 @@
     <button class="close-btn" type="button" aria-label="閉じる" onclick="closeMenu()">✕</button>
   </div>
 
-  <a href="#items" onclick="closeMenu()">アイテム</a>
+  <a href="#items2" onclick="closeMenu()">アイテム</a>
   <a href="#flow" onclick="closeMenu()">制作の流れ</a>
   <a href="#base" onclick="closeMenu()">BASE SHOP</a>
   <a href="#line" onclick="closeMenu()">公式LINE</a>
@@ -545,30 +612,57 @@
     </div>
   </section>
 
-  <section id="items" class="cta">
-    <div class="container">
-      <h2 class="section-title">ITEMS</h2>
-      <p class="section-lead">写真からデザインを制作し、<br>日常で使えるアイテムに仕上げます。</p>
+  
 
-      <div class="cards">
-        <div class="card">
-            <img src="images/photo02.jpg" alt="Trail Tail Tシャツ" class="item-image">
+  <section id="items2" class="cta">
+  <div class="container">
+
+    <h2 class="section-title">ITEMS</h2>
+
+    <p class="section-lead">
+      写真からデザインを制作し、<br>
+      日常で使えるアイテムに仕上げます。
+    </p>
+
+    <div class="items2-grid">
+
+      <article class="items2-card">
+        <img src="images/photo02.jpg"
+             alt="マグカップ"
+             class="items2-image">
+
+        <div class="items2-body">
           <h3>マグカップ</h3>
           <p>いつもの朝が、ちょっと特別な時間になります。</p>
         </div>
-        <div class="card">
-            <img src="images/photo04.jpg" alt="Trail Tail Tシャツ" class="item-image">
+      </article>
+
+      <article class="items2-card">
+        <img src="images/photo04.jpg"
+             alt="お散歩バッグ"
+             class="items2-image">
+
+        <div class="items2-body">
           <h3>お散歩バッグ</h3>
           <p>お散歩やお買い物にも使いやすい、毎日持てるグッズ。</p>
         </div>
-        <div class="card">
-            <img src="images/photo03.jpg" alt="Trail Tail Tシャツ" class="item-image">
+      </article>
+
+      <article class="items2-card">
+        <img src="images/photo03.jpg"
+             alt="キーホルダー"
+             class="items2-image">
+
+        <div class="items2-body">
           <h3>キーホルダー</h3>
           <p>いつでも一緒にお出かけできるキーホルダーです。</p>
         </div>
-      </div>
+      </article>
+
     </div>
-  </section>
+
+  </div>
+</section>
 
   <section id="flow">
     <div class="container">
