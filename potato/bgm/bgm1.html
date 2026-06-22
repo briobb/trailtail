@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BGM page</title>
+
+<style>
+body{
+    margin:0;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    height:100vh;
+    background:#FB9B3B;
+}
+
+#playBtn{
+    width:250px;
+    cursor:pointer;
+}
+</style>
+</head>
+
+<body>
+
+<img id="playBtn" src="button1_big.jpg" alt="再生ボタン">
+
+<audio id="bgm" src="../sanpo/bgm.mp3" loop></audio>
+
+<script>
+const playBtn = document.getElementById("playBtn");
+const bgm = document.getElementById("bgm");
+
+playBtn.addEventListener("click", async () => {
+
+    if (bgm.paused) {
+        await bgm.play();
+    } else {
+        bgm.pause();
+    }
+
+});
+</script>
+
+</body>
+</html>

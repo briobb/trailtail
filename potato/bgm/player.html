@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>player</title>
+
+<style>
+
+body{
+    margin:0;
+    background:white;
+
+    display:flex;
+    justify-content:center;
+
+    padding:30px 0;
+
+    min-height:100vh;
+
+    font-family:sans-serif;
+}
+
+.container{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+
+    gap:24px;
+
+    width:100%;
+}
+
+.link-button{
+    width:85vw;
+    max-width:420px;
+
+    cursor:pointer;
+
+    transition:transform 0.15s;
+}
+
+.link-button:active{
+    transform:scale(0.97);
+}
+
+a{
+    text-decoration:none;
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <img class="link-button"
+             src="sign.jpg"
+             alt="sign">
+    
+     <a href="../sanpo/jump-pop.html">
+        <img class="link-button"
+             src="game1.jpg"
+             alt="game1">
+    </a>
+
+     <a href="../catch/catch-game.html">
+        <img class="link-button"
+             src="game2.jpg"
+             alt="game2">
+    </a>
+
+    <a href="bgm1.html">
+        <img class="link-button"
+             src="button1.jpg"
+             alt="PAGE1">
+    </a>
+
+    <a href="bgm2.html">
+        <img class="link-button"
+             src="button2.jpg"
+             alt="PAGE2">
+    </a>
+
+   <a href="bgm3.html">
+        <img class="link-button"
+             src="button3.jpg"
+             alt="PAGE3">
+    </a>
+
+</div>
+
+</body>
+</html>

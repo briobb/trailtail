@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>★ ぽっちゃん掲示板 ★</title>
+
+<style>
+body{
+    margin:0;
+    padding:20px;
+    background-color:#cfefff;
+    background-image:url("images/bg.PNG");
+    background-repeat:repeat;
+    font-family:"MS PGothic","Osaka",sans-serif;
+    color:#003366;
+}
+
+.board-wrap{
+    max-width:800px;
+    margin:auto;
+    background:#ffffff;
+    border:4px double #3399cc;
+    padding:20px;
+    box-shadow:4px 4px 0 rgba(0,0,0,0.15);
+}
+
+h1{
+    margin-top:0;
+    text-align:center;
+    color:#0066cc;
+    text-shadow:1px 1px 0 #ffffff, 2px 2px 0 #99ccff;
+}
+
+.form-box{
+    background:#eef9ff;
+    border:2px solid #99ccff;
+    padding:15px;
+    margin-bottom:25px;
+}
+
+.form-box p{
+    margin-top:0;
+    font-weight:bold;
+}
+
+input,
+textarea{
+    width:100%;
+    box-sizing:border-box;
+    margin-bottom:10px;
+    padding:8px;
+    font-size:16px;
+    color:#003366;
+    background:#ffffff;
+    border:2px inset #b0dfff;
+}
+
+textarea{
+    height:100px;
+    resize:vertical;
+}
+
+button{
+    width:100%;
+    padding:10px;
+    font-size:18px;
+    font-weight:bold;
+    cursor:pointer;
+    background:#99ddff;
+    color:#003366;
+    border:3px outset #dff5ff;
+}
+
+button:active{
+    border:3px inset #dff5ff;
+}
+
+.post{
+    background:#f8fdff;
+    border:2px dashed #66b3ff;
+    padding:12px;
+    margin-bottom:15px;
+}
+
+.name{
+    color:#0066cc;
+    font-weight:bold;
+}
+
+.date{
+    color:#6699cc;
+    font-size:12px;
+    margin-top:4px;
+    margin-bottom:10px;
+}
+
+.message{
+    white-space:pre-wrap;
+    line-height:1.6;
+}
+
+.reply{
+    margin-top:12px;
+    padding:10px;
+    background:#e6f7ff;
+    border-left:5px solid #66b3ff;
+}
+
+.reply-name{
+    color:#0066cc;
+    font-weight:bold;
+    margin-bottom:5px;
+}
+
+.footer{
+    text-align:center;
+    margin-top:20px;
+    color:#6699cc;
+    font-size:12px;
+}
+
+.only2{
+    text-align:center;
+    font-size:18px;
+    color:#ff8a04;
+    font-style:italic;
+    font-weight:bold;
+    margin:18px 0 8px;
+    text-shadow:1px 1px white;
+}
+
+.only{
+    text-align:center;
+    font-size:26px;
+    font-style:italic;
+    font-weight:bold;
+    margin:8px 0 18px;
+    text-shadow:1px 1px white;
+}
+
+.only a{
+    color:#ff00ff;
+    text-decoration:underline;
+}
+
+.only a:hover{
+    color:#ff0000;
+}
+
+.loading-popup{
+    display:none;
+    position:fixed;
+    inset:0;
+    background:rgba(255,255,255,0.4);
+    justify-content:center;
+    align-items:center;
+    z-index:9999;
+}
+
+.loading-window{
+    width:300px;
+    background:white;
+    border:3px outset #99ccff;
+    box-shadow:6px 6px 0 rgba(0,0,0,0.2);
+}
+
+.loading-title{
+    background:#66b3ff;
+    color:white;
+    padding:6px 10px;
+    font-weight:bold;
+}
+
+.loading-body{
+    padding:20px;
+    text-align:center;
+    color:#003366;
+    line-height:1.8;
+}
+
+.loading-dots{
+    font-weight:bold;
+    animation:blink 1s infinite;
+}
+
+@keyframes blink{
+    50%{ opacity:0.3; }
+}
+</style>
+</head>
+
+<body>
+
+<div class="board-wrap">
+
+    <h1>★ ぽっちゃん掲示板 ★</h1>
+
+    <div class="form-box">
+        <p>足あとを残していってね♪</p>
+
+        <input type="text" id="nameInput" placeholder="お名前">
+
+        <textarea id="messageInput" placeholder="メッセージを書いてね"></textarea>
+
+        <button onclick="addPost()">書き込む</button>
+    </div>
+
+    <div id="postArea">
+
+        <div class="post">
+            <div class="name">通りすがりのぽっちゃんファン</div>
+            <div class="date">2026/06/03</div>
+            <div class="message">ぽっちゃんかわいいですね！
+また遊びに来ます♪</div>
+            <div class="reply">
+                <div class="reply-name">管理人より</div>
+                ご訪問ありがとうございます！ぽっちゃんも喜んでおります♪
+            </div>
+        </div>
+
+        <div class="post">
+            <div class="name">101回目のプロポーツ</div>
+            <div class="date">2026/06/02</div>
+            <div class="message">キリ番狙って毎日来ています！</div>
+            <div class="reply">
+                <div class="reply-name">管理人より</div>
+                キリ番ゲット目指してください！！
+            </div>
+        </div>
+
+        <div class="post">
+            <div class="name">旅人</div>
+            <div class="date">2026/06/01</div>
+            <div class="message">ぽっちゃん最高！毎日見ています！</div>
+            <div class="reply">
+                <div class="reply-name">管理人より</div>
+                カキコありがとうございます！ぽっちゃんに癒されてくださいね！
+            </div>
+        </div>
+
+    </div>
+
+    <div class="footer">Since 2026</div>
+
+    <div class="only2">🎵相互リンク募集中です🎵</div>
+
+    <div class="only">
+        <a href="top.html">TOPへ戻る</a>
+    </div>
+
+</div>
+
+<div id="loadingPopup" class="loading-popup">
+    <div class="loading-window">
+        <div class="loading-title">通信中...</div>
+        <div class="loading-body">
+            掲示板サーバーに接続しています<br>
+            しばらくお待ちください<br><br>
+            <span class="loading-dots">● ● ●</span>
+        </div>
+    </div>
+</div>
+
+<script>
+function addPost(){
+
+    const nameInput = document.getElementById("nameInput");
+    const messageInput = document.getElementById("messageInput");
+    const postArea = document.getElementById("postArea");
+    const loadingPopup = document.getElementById("loadingPopup");
+
+    const name = nameInput.value.trim() || "ななしさん";
+    const message = messageInput.value.trim();
+
+    if(message === ""){
+        alert("メッセージを書いてね！");
+        return;
+    }
+
+    const replies = [
+        "カキコありがとうございます！",
+        "ぽっちゃんも喜んでおります！",
+        "また遊びに来てくださいね♪",
+        "足あとありがとうございます！",
+        "管理人も嬉しいです♪",
+        "ご訪問ありがとうございます！",
+        "キリ番報告もお待ちしております♪"
+    ];
+
+    const randomReply = replies[Math.floor(Math.random() * replies.length)];
+
+    const today = new Date();
+
+    const dateText =
+        today.getFullYear() + "/" +
+        String(today.getMonth()+1).padStart(2,"0") + "/" +
+        String(today.getDate()).padStart(2,"0");
+
+    const post = document.createElement("div");
+    post.className = "post";
+
+    post.innerHTML = `
+        <div class="name">${escapeHtml(name)}</div>
+        <div class="date">${dateText}</div>
+        <div class="message">${escapeHtml(message)}</div>
+        <div class="reply">
+            <div class="reply-name">管理人より</div>
+            ${randomReply}
+        </div>
+    `;
+
+    loadingPopup.style.display = "flex";
+
+    setTimeout(function(){
+        loadingPopup.style.display = "none";
+        postArea.prepend(post);
+        nameInput.value = "";
+        messageInput.value = "";
+    }, 1600);
+}
+
+function escapeHtml(text){
+    return text
+        .replace(/&/g,"&amp;")
+        .replace(/</g,"&lt;")
+        .replace(/>/g,"&gt;")
+        .replace(/"/g,"&quot;")
+        .replace(/'/g,"&#039;");
+}
+</script>
+
+</body>
+</html>

@@ -1,0 +1,910 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <title>Pomeranian Scroll Action</title>
+  <style>
+    :root {
+      --bg1: #87d4ff;
+      --bg2: #dff6ff;
+      --panel: rgba(20, 27, 39, 0.78);
+      --panel-border: rgba(255, 255, 255, 0.15);
+      --text: #ffffff;
+      --accent: #ffd166;
+      --danger: #ff6b6b;
+      --shadow: 0 10px 30px rgba(0, 0, 0, 0.28);
+    }
+
+    * {
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+      -webkit-user-select: none;
+      user-select: none;
+      -webkit-touch-callout: none;
+    }
+
+    html, body {
+      margin: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      font-family: Arial, "Hiragino Kaku Gothic ProN", "Yu Gothic", sans-serif;
+      background: linear-gradient(180deg, var(--bg1), var(--bg2));
+      -webkit-user-select: none;
+      user-select: none;
+      -webkit-touch-callout: none;
+      overscroll-behavior: none;
+    }
+
+    body {
+      display: grid;
+      place-items: center;
+    }
+
+    #game-shell {
+      position: relative;
+      width: min(100vw, 100vh * 0.5625);
+      height: min(100vh, 100vw / 0.5625);
+      max-width: 720px;
+      max-height: 1280px;
+      aspect-ratio: 9 / 16;
+      overflow: hidden;
+      background: linear-gradient(180deg, #86d8ff 0%, #b8ecff 60%, #e9fff3 100%);
+      border-radius: 24px;
+      box-shadow: var(--shadow);
+      border: 1px solid rgba(255, 255, 255, 0.4);
+      touch-action: none;
+      -webkit-user-select: none;
+      user-select: none;
+      -webkit-touch-callout: none;
+    }
+
+    canvas {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      display: block;
+      touch-action: none;
+      -webkit-user-select: none;
+      user-select: none;
+      -webkit-touch-callout: none;
+    }
+
+    #hud {
+      position: absolute;
+      top: 14px;
+      left: 14px;
+      right: 14px;
+      z-index: 40;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      pointer-events: none;
+    }
+
+    .panel {
+      background: var(--panel);
+      color: var(--text);
+      border: 1px solid var(--panel-border);
+      border-radius: 16px;
+      padding: 10px 14px;
+      backdrop-filter: blur(8px);
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.18);
+    }
+
+    #scoreboard {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      min-width: 0;
+      flex-wrap: wrap;
+    }
+
+    .score-box {
+      min-width: 85px;
+    }
+
+    .score-label {
+      font-size: 12px;
+      opacity: 0.78;
+      letter-spacing: 0.08em;
+    }
+
+    .score-value {
+      margin-top: 4px;
+      font-size: 24px;
+      font-weight: 700;
+      line-height: 1;
+      color: var(--accent);
+    }
+
+    #sound-btn {
+      pointer-events: auto;
+      border: 0;
+      background: var(--panel);
+      color: var(--text);
+      border: 1px solid var(--panel-border);
+      border-radius: 999px;
+      padding: 12px 16px;
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
+      min-width: 110px;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.18);
+    }
+
+    #sound-btn:active {
+      transform: scale(0.98);
+    }
+
+    #overlay {
+      position: absolute;
+      inset: 0;
+      z-index: 30;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      background: linear-gradient(180deg, rgba(0, 0, 0, 0.18), rgba(0, 0, 0, 0.42));
+    }
+
+    #overlay.hidden {
+      display: none;
+    }
+
+    .overlay-card {
+      width: min(92%, 480px);
+      background: rgba(10, 18, 30, 0.82);
+      color: white;
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      border-radius: 24px;
+      padding: 28px 22px;
+      text-align: center;
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(8px);
+    }
+
+    .overlay-card h1 {
+      margin: 0 0 12px;
+      font-size: clamp(26px, 5vw, 42px);
+      line-height: 1.1;
+    }
+
+    .overlay-card p {
+      margin: 8px 0;
+      font-size: clamp(14px, 2.8vw, 18px);
+      line-height: 1.7;
+      opacity: 0.95;
+    }
+
+    .highlight {
+      color: var(--accent);
+      font-weight: 700;
+    }
+
+    #start-btn {
+      margin-top: 18px;
+      border: 0;
+      border-radius: 999px;
+      padding: 14px 24px;
+      font-size: 17px;
+      font-weight: 700;
+      background: var(--accent);
+      color: #1c2330;
+      cursor: pointer;
+      min-width: 180px;
+    }
+
+    #start-btn:active {
+      transform: scale(0.98);
+    }
+
+    @media (max-width: 768px) {
+      #game-shell {
+        width: 100vw;
+        height: 100vh;
+        max-width: none;
+        max-height: none;
+        border-radius: 0;
+        border: 0;
+      }
+
+      #hud {
+        top: 10px;
+        left: 10px;
+        right: 10px;
+      }
+
+      .panel,
+      #sound-btn {
+        border-radius: 14px;
+      }
+
+      .score-box {
+        min-width: 85px;
+      }
+
+      .score-value {
+        font-size: 22px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="game-shell" aria-label="Pomeranian scroll action game">
+    <canvas id="game-canvas" width="720" height="1280"></canvas>
+
+    <div id="hud">
+      <div id="scoreboard">
+        <div class="panel score-box">
+          <div class="score-label">SCORE</div>
+          <div id="score" class="score-value">0</div>
+        </div>
+        <div class="panel score-box">
+          <div class="score-label">HI-SCORE</div>
+          <div id="high-score" class="score-value">0</div>
+        </div>
+      </div>
+      <button id="sound-btn" type="button">SOUND ON</button>
+    </div>
+
+    <div id="overlay">
+      <div class="overlay-card">
+        <h1>ぽっちゃんとお散歩</h1>
+        <p>画面を<span class="highlight">押している間だけ上昇</span>するよ！</p>
+        <p>障害物を避けながら進むとスコアが伸びる！</p>
+        <p>PCはクリック長押し、スマホ・タブレットはタッチ長押しで操作できるよ。</p>
+        <button id="start-btn" type="button">ゲームスタート</button>
+      </div>
+    </div>
+
+    <audio id="bgm" src="bgm.mp3" loop preload="auto"></audio>
+  </div>
+
+  <script>
+    const canvas = document.getElementById('game-canvas');
+    const ctx = canvas.getContext('2d');
+
+    const scoreEl = document.getElementById('score');
+    const highScoreEl = document.getElementById('high-score');
+    const soundBtn = document.getElementById('sound-btn');
+    const overlay = document.getElementById('overlay');
+    const bgm = document.getElementById('bgm');
+
+    const WORLD = {
+      width: 720,
+      height: 1280,
+      groundY: 1180,
+      scrollSpeed: 330,
+      gravity: 1500,
+      tapImpulse: -420,
+      baseLift: 1550,
+      maxLift: 2850,
+      maxHoldBoostTime: 0.22,
+      releaseDropBoost: 120,
+      maxRiseSpeed: -780,
+      maxFallSpeed: 980,
+      obstacleGapMin: 210,
+      obstacleGapMax: 320,
+      obstacleInterval: 1.15,
+      maxDelta: 0.033,
+    };
+
+    const playerImg = new Image();
+    playerImg.src = 'pomeranian.png';
+
+    const obstacleImg = new Image();
+
+    const player = {
+      x: 140,
+      y: 640,
+      w: 110,
+      h: 110,
+      velocityY: 0,
+      rotation: 0,
+    };
+
+    let obstacles = [];
+    let particles = [];
+    let pressActive = false;
+    let soundEnabled = true;
+    let gameStarted = false;
+    let gameOver = false;
+    let score = 0;
+    let highScore = 0;
+    let elapsed = 0;
+    let obstacleTimer = 0;
+    let lastTime = 0;
+    let bgOffset = 0;
+    let cloudOffset = 0;
+    let holdTime = 0;
+    let prevPressActive = false;
+
+    let audioCtx = null;
+
+    function getAudioContext() {
+      if (!audioCtx) {
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      }
+      return audioCtx;
+    }
+
+    function unlockAudio() {
+      if (!soundEnabled) return;
+      const ctx = getAudioContext();
+      if (ctx.state === 'suspended') {
+        ctx.resume().catch(() => {});
+      }
+    }
+
+    function playJumpSound() {
+      if (!soundEnabled) return;
+
+      const ctx = getAudioContext();
+      const now = ctx.currentTime;
+
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+
+      osc.type = 'square';
+      osc.frequency.setValueAtTime(420, now);
+      osc.frequency.exponentialRampToValueAtTime(760, now + 0.22);
+
+      gain.gain.setValueAtTime(0.0001, now);
+      gain.gain.exponentialRampToValueAtTime(0.18, now + 0.015);
+      gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.50);
+
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+
+      osc.start(now);
+      osc.stop(now + 0.52);
+    }
+
+    function playCrashSound() {
+      if (!soundEnabled) return;
+
+      const ctx = getAudioContext();
+      const now = ctx.currentTime;
+
+      const bufferSize = Math.floor(ctx.sampleRate * 0.55);
+      const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+      const data = buffer.getChannelData(0);
+
+      for (let i = 0; i < bufferSize; i++) {
+        const t = i / bufferSize;
+        const fade = Math.pow(1 - t, 1.8);
+        data[i] = (Math.random() * 2 - 1) * fade * 0.9;
+      }
+
+      const noise = ctx.createBufferSource();
+      noise.buffer = buffer;
+
+      const filter = ctx.createBiquadFilter();
+      filter.type = 'lowpass';
+      filter.frequency.setValueAtTime(3200, now);
+      filter.frequency.exponentialRampToValueAtTime(700, now + 0.22);
+      filter.Q.value = 1.2;
+
+      const rumbleOsc = ctx.createOscillator();
+      rumbleOsc.type = 'sawtooth';
+      rumbleOsc.frequency.setValueAtTime(220, now);
+      rumbleOsc.frequency.exponentialRampToValueAtTime(120, now + 0.20);
+
+      const noiseGain = ctx.createGain();
+      noiseGain.gain.setValueAtTime(0.0001, now);
+      noiseGain.gain.exponentialRampToValueAtTime(0.8, now + 0.012);
+      noiseGain.gain.exponentialRampToValueAtTime(0.0001, now + 0.52);
+
+      const rumbleGain = ctx.createGain();
+      rumbleGain.gain.setValueAtTime(0.0001, now);
+      rumbleGain.gain.exponentialRampToValueAtTime(0.12, now + 0.01);
+      rumbleGain.gain.exponentialRampToValueAtTime(0.0001, now + 0.42);
+
+      noise.connect(filter);
+      filter.connect(noiseGain);
+      noiseGain.connect(ctx.destination);
+
+      rumbleOsc.connect(rumbleGain);
+      rumbleGain.connect(ctx.destination);
+
+      noise.start(now);
+      noise.stop(now + 0.55);
+
+      rumbleOsc.start(now);
+      rumbleOsc.stop(now + 0.75);
+    }
+
+    function resetGame() {
+      player.y = 640;
+      player.velocityY = 0;
+      player.rotation = 0;
+      obstacles = [];
+      particles = [];
+      score = 0;
+      elapsed = 0;
+      obstacleTimer = 0;
+      bgOffset = 0;
+      cloudOffset = 0;
+      holdTime = 0;
+      prevPressActive = false;
+      gameOver = false;
+      updateScoreUI();
+    }
+
+    function updateScoreUI() {
+      scoreEl.textContent = Math.floor(score);
+      highScoreEl.textContent = Math.floor(highScore);
+    }
+
+    function startGame() {
+      unlockAudio();
+      resetGame();
+      gameStarted = true;
+      overlay.classList.add('hidden');
+      tryPlayBgm();
+    }
+
+    function endGame() {
+      gameOver = true;
+      highScore = Math.max(highScore, Math.floor(score));
+      updateScoreUI();
+      showOverlay(
+        'Game Over',
+        `今回のスコア: <span class="highlight">${Math.floor(score)}</span><br>もう一度挑戦！`,
+        'リスタート'
+      );
+    }
+
+    function showOverlay(title, message, buttonText) {
+      overlay.innerHTML = `
+        <div class="overlay-card">
+          <h1>${title}</h1>
+          <p>${message}</p>
+          <p>画面を押している間だけ上昇するよ。</p>
+          <button id="start-btn" type="button">${buttonText}</button>
+        </div>
+      `;
+      overlay.classList.remove('hidden');
+
+      const newStartBtn = overlay.querySelector('#start-btn');
+      newStartBtn.addEventListener('click', startGame, { once: true });
+    }
+
+    function tryPlayBgm() {
+      if (!soundEnabled) return;
+      bgm.volume = 0.7;
+      const p = bgm.play();
+      if (p && typeof p.catch === 'function') {
+        p.catch(() => {
+          // ブラウザの自動再生制限時はユーザー操作後に再試行される
+        });
+      }
+    }
+
+    function stopBgm() {
+      bgm.pause();
+      bgm.currentTime = 0;
+    }
+
+    function toggleSound() {
+      soundEnabled = !soundEnabled;
+      soundBtn.textContent = soundEnabled ? 'SOUND ON' : 'SOUND OFF';
+
+      if (soundEnabled) {
+        unlockAudio();
+      }
+
+      if (soundEnabled && gameStarted && !gameOver) {
+        tryPlayBgm();
+      } else {
+        bgm.pause();
+      }
+    }
+
+    function getScrollMultiplier() {
+      const cycleProgress = (score % 10000) / 10000;
+      return 1 + cycleProgress * 0.2;
+    }
+
+    function spawnObstacle() {
+      const width = randomRange(90, 140);
+      const gapCenter = randomRange(300, WORLD.groundY - 300);
+      const gapSize = randomRange(WORLD.obstacleGapMin, WORLD.obstacleGapMax);
+      const topHeight = Math.max(80, gapCenter - gapSize / 2);
+      const bottomY = gapCenter + gapSize / 2;
+      const bottomHeight = WORLD.groundY - bottomY;
+
+      obstacles.push({
+        x: WORLD.width + 80,
+        width,
+        passed: false,
+        top: { x: 0, y: 0, w: width, h: topHeight },
+        bottom: { x: 0, y: bottomY, w: width, h: bottomHeight },
+      });
+    }
+
+    function update(dt) {
+      if (!gameStarted || gameOver) return;
+
+      elapsed += dt;
+      obstacleTimer += dt;
+
+      const speedMultiplier = getScrollMultiplier();
+      const currentScrollSpeed = WORLD.scrollSpeed * speedMultiplier;
+
+      bgOffset = (bgOffset + currentScrollSpeed * 0.18 * dt) % WORLD.width;
+      cloudOffset = (cloudOffset + currentScrollSpeed * 0.32 * dt) % WORLD.width;
+
+      if (pressActive && !prevPressActive) {
+        player.velocityY = WORLD.tapImpulse;
+        holdTime = 0;
+        playJumpSound();
+      }
+
+      if (pressActive) {
+        holdTime += dt;
+        const holdRatio = clamp(holdTime / WORLD.maxHoldBoostTime, 0, 1);
+        const currentLift = WORLD.baseLift + (WORLD.maxLift - WORLD.baseLift) * holdRatio;
+        player.velocityY -= currentLift * dt;
+      } else {
+        holdTime = 0;
+        if (prevPressActive && player.velocityY < WORLD.releaseDropBoost) {
+          player.velocityY = WORLD.releaseDropBoost;
+        }
+      }
+
+      player.velocityY += WORLD.gravity * dt;
+      player.velocityY = clamp(player.velocityY, WORLD.maxRiseSpeed, WORLD.maxFallSpeed);
+      prevPressActive = pressActive;
+      player.y += player.velocityY * dt;
+      player.rotation = 0;
+
+      if (player.y < 40) {
+        player.y = 40;
+        player.velocityY = 0;
+      }
+
+      if (player.y + player.h / 2 >= WORLD.groundY) {
+        player.y = WORLD.groundY - player.h / 2;
+        burst(player.x + player.w * 0.35, player.y + player.h * 0.3, 16);
+        playCrashSound();
+        endGame();
+        return;
+      }
+
+      if (obstacleTimer >= WORLD.obstacleInterval) {
+        obstacleTimer = 0;
+        spawnObstacle();
+      }
+
+      obstacles.forEach((obstacle) => {
+        obstacle.x -= currentScrollSpeed * dt;
+        obstacle.top.x = obstacle.x;
+        obstacle.bottom.x = obstacle.x;
+
+        if (!obstacle.passed && obstacle.x + obstacle.width < player.x) {
+          obstacle.passed = true;
+          score += 100;
+          highScore = Math.max(highScore, Math.floor(score));
+          updateScoreUI();
+        }
+      });
+
+      obstacles = obstacles.filter((obstacle) => obstacle.x + obstacle.width > -120);
+
+      score += dt * 18;
+      highScore = Math.max(highScore, Math.floor(score));
+      updateScoreUI();
+
+      for (const obstacle of obstacles) {
+        if (rectHit(getPlayerRect(), obstacle.top) || rectHit(getPlayerRect(), obstacle.bottom)) {
+          burst(player.x + player.w * 0.5, player.y + player.h * 0.5, 18);
+          playCrashSound();
+          endGame();
+          break;
+        }
+      }
+
+      particles.forEach((p) => {
+        p.x += p.vx * dt;
+        p.y += p.vy * dt;
+        p.vy += 900 * dt;
+        p.life -= dt;
+      });
+      particles = particles.filter((p) => p.life > 0);
+    }
+
+    function getPlayerRect() {
+      return {
+        x: player.x - player.w * 0.34,
+        y: player.y - player.h * 0.28,
+        w: player.w * 0.68,
+        h: player.h * 0.56,
+      };
+    }
+
+    function rectHit(a, b) {
+      return (
+        a.x < b.x + b.w &&
+        a.x + a.w > b.x &&
+        a.y < b.y + b.h &&
+        a.y + a.h > b.y
+      );
+    }
+
+    function burst(x, y, count) {
+      for (let i = 0; i < count; i++) {
+        particles.push({
+          x,
+          y,
+          vx: randomRange(-260, 260),
+          vy: randomRange(-360, 80),
+          r: randomRange(5, 12),
+          life: randomRange(0.35, 0.8),
+        });
+      }
+    }
+
+    function draw() {
+      ctx.clearRect(0, 0, WORLD.width, WORLD.height);
+      drawBackground();
+      drawGround();
+      drawObstacles();
+      drawPlayer();
+      drawParticles();
+
+      if (!gameStarted) {
+        drawTapHint();
+      }
+    }
+
+    function drawBackground() {
+      const sky = ctx.createLinearGradient(0, 0, 0, WORLD.height);
+      sky.addColorStop(0, '#7ed6ff');
+      sky.addColorStop(0.55, '#b8ebff');
+      sky.addColorStop(1, '#f5fff0');
+      ctx.fillStyle = sky;
+      ctx.fillRect(0, 0, WORLD.width, WORLD.height);
+
+      for (let i = -1; i <= 2; i++) {
+        drawCloudBand(i * 360 - cloudOffset * 0.7, 130, 0.22);
+        drawCloudBand(i * 420 - cloudOffset, 260, 0.32);
+      }
+
+      for (let i = -1; i <= 2; i++) {
+        drawHill(i * WORLD.width - bgOffset, 930, 220, '#9fe08a');
+        drawHill(i * WORLD.width - bgOffset + 180, 980, 180, '#7ccc64');
+        drawHill(i * WORLD.width - bgOffset + 420, 960, 200, '#68b34f');
+      }
+    }
+
+    function drawCloudBand(x, y, alpha) {
+      ctx.save();
+      ctx.globalAlpha = alpha;
+      ctx.fillStyle = '#ffffff';
+
+      for (let i = 0; i < 5; i++) {
+        const cx = x + i * 140;
+        ctx.beginPath();
+        ctx.arc(cx, y, 38, 0, Math.PI * 2);
+        ctx.arc(cx + 34, y - 10, 32, 0, Math.PI * 2);
+        ctx.arc(cx + 62, y + 6, 28, 0, Math.PI * 2);
+        ctx.closePath();
+        ctx.fill();
+      }
+
+      ctx.restore();
+    }
+
+    function drawHill(x, y, h, color) {
+      ctx.fillStyle = color;
+      ctx.beginPath();
+      ctx.moveTo(x, WORLD.height);
+      ctx.quadraticCurveTo(x + WORLD.width * 0.25, y - h, x + WORLD.width * 0.5, WORLD.height);
+      ctx.quadraticCurveTo(x + WORLD.width * 0.75, y - h * 0.55, x + WORLD.width, WORLD.height);
+      ctx.closePath();
+      ctx.fill();
+    }
+
+    function drawGround() {
+      ctx.fillStyle = '#4da144';
+      ctx.fillRect(0, WORLD.groundY, WORLD.width, WORLD.height - WORLD.groundY);
+
+      ctx.fillStyle = '#3a8533';
+      for (let i = -1; i <= 8; i++) {
+        const x = ((i * 120) - (bgOffset * 1.6)) % (WORLD.width + 160);
+        ctx.fillRect(x, WORLD.groundY + 20, 80, 12);
+      }
+    }
+
+    function drawObstacles() {
+      for (const obstacle of obstacles) {
+        drawObstacleRect(obstacle.top);
+        drawObstacleRect(obstacle.bottom);
+      }
+    }
+
+    function drawObstacleRect(rect) {
+      if (obstacleImg.complete && obstacleImg.naturalWidth > 0) {
+        const pattern = ctx.createPattern(obstacleImg, 'repeat');
+        if (pattern) {
+          ctx.save();
+          ctx.translate(rect.x, rect.y);
+          ctx.fillStyle = pattern;
+          ctx.fillRect(0, 0, rect.w, rect.h);
+          ctx.restore();
+        } else {
+          fallbackObstacle(rect);
+        }
+      } else {
+        fallbackObstacle(rect);
+      }
+
+      ctx.fillStyle = 'rgba(0,0,0,0.14)';
+      ctx.fillRect(rect.x + rect.w - 8, rect.y, 8, rect.h);
+    }
+
+    function fallbackObstacle(rect) {
+      const grad = ctx.createLinearGradient(rect.x, rect.y, rect.x + rect.w, rect.y);
+      grad.addColorStop(0, '#ff9f68');
+      grad.addColorStop(1, '#e85d75');
+      ctx.fillStyle = grad;
+      ctx.fillRect(rect.x, rect.y, rect.w, rect.h);
+      ctx.fillStyle = 'rgba(255,255,255,0.2)';
+      ctx.fillRect(rect.x + 10, rect.y, 8, rect.h);
+    }
+
+    function drawPlayer() {
+      ctx.save();
+      ctx.translate(player.x, player.y);
+      ctx.rotate(player.rotation);
+
+      if (playerImg.complete && playerImg.naturalWidth > 0) {
+        ctx.drawImage(playerImg, -player.w / 2, -player.h / 2, player.w, player.h);
+      } else {
+        fallbackPlayer();
+      }
+
+      ctx.restore();
+    }
+
+    function fallbackPlayer() {
+      ctx.fillStyle = '#fff3d6';
+      ctx.beginPath();
+      ctx.ellipse(0, 6, 48, 40, 0, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.fillStyle = '#f4d7a2';
+      ctx.beginPath();
+      ctx.arc(-12, -8, 20, 0, Math.PI * 2);
+      ctx.arc(18, -4, 17, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.fillStyle = '#5b4635';
+      ctx.beginPath();
+      ctx.arc(-18, -28, 10, 0, Math.PI * 2);
+      ctx.arc(10, -24, 9, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.fillStyle = '#ffffff';
+      ctx.beginPath();
+      ctx.arc(14, -10, 14, 0, Math.PI * 2);
+      ctx.fill();
+    }
+
+    function drawParticles() {
+      for (const p of particles) {
+        ctx.save();
+        ctx.globalAlpha = clamp(p.life / 0.8, 0, 1);
+        ctx.fillStyle = '#fff3b0';
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.restore();
+      }
+    }
+
+    function drawTapHint() {
+      ctx.save();
+      ctx.globalAlpha = 0.12;
+      ctx.fillStyle = '#000';
+      ctx.font = '700 48px Arial';
+      ctx.textAlign = 'center';
+      ctx.fillText('HOLD TO FLY', WORLD.width / 2, WORLD.height - 140);
+      ctx.restore();
+    }
+
+    function loop(timestamp) {
+      if (!lastTime) lastTime = timestamp;
+      const dt = Math.min((timestamp - lastTime) / 1000, WORLD.maxDelta);
+      lastTime = timestamp;
+
+      update(dt);
+      draw();
+      requestAnimationFrame(loop);
+    }
+
+    function setPressState(isPressed) {
+      pressActive = isPressed;
+      if (isPressed) {
+        unlockAudio();
+      }
+      if (isPressed && soundEnabled && gameStarted && !gameOver && bgm.paused) {
+        tryPlayBgm();
+      }
+    }
+
+    function bindControls() {
+      const shell = document.getElementById('game-shell');
+
+      const isUiButton = (target) => {
+        return !!(target && (
+          target.closest('#sound-btn') ||
+          target.closest('#start-btn')
+        ));
+      };
+
+      shell.addEventListener('touchstart', (e) => {
+        if (isUiButton(e.target)) return;
+        e.preventDefault();
+      }, { passive: false });
+
+      shell.addEventListener('touchmove', (e) => {
+        if (isUiButton(e.target)) return;
+        e.preventDefault();
+      }, { passive: false });
+
+      shell.addEventListener('touchend', (e) => {
+        if (isUiButton(e.target)) return;
+        e.preventDefault();
+      }, { passive: false });
+
+      shell.addEventListener('pointerdown', (e) => {
+        if (isUiButton(e.target)) return;
+        e.preventDefault();
+        setPressState(true);
+      }, { passive: false });
+
+      shell.addEventListener('pointermove', (e) => {
+        if (pressActive) e.preventDefault();
+      }, { passive: false });
+
+      window.addEventListener('pointerup', () => setPressState(false));
+      window.addEventListener('pointercancel', () => setPressState(false));
+      window.addEventListener('blur', () => setPressState(false));
+
+      shell.addEventListener('contextmenu', (e) => e.preventDefault());
+      canvas.addEventListener('contextmenu', (e) => e.preventDefault());
+
+      document.addEventListener('contextmenu', (e) => {
+        if (shell.contains(e.target)) e.preventDefault();
+      });
+
+      document.addEventListener('selectstart', (e) => {
+        if (shell.contains(e.target)) e.preventDefault();
+      });
+    }
+
+    soundBtn.addEventListener('click', toggleSound);
+
+    const initialStartBtn = document.getElementById('start-btn');
+    initialStartBtn.addEventListener('click', startGame, { once: true });
+
+    function clamp(v, min, max) {
+      return Math.max(min, Math.min(max, v));
+    }
+
+    function randomRange(min, max) {
+      return Math.random() * (max - min) + min;
+    }
+
+    bindControls();
+    updateScoreUI();
+    requestAnimationFrame(loop);
+  </script>
+</body>
+</html>

@@ -1,0 +1,994 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ぽっちゃんがレスキュー</title>
+
+<style>
+* {
+  box-sizing: border-box;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
+}
+
+body {
+  margin: 0;
+  background: #222;
+  font-family: sans-serif;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  overflow: hidden;
+}
+
+#game {
+  width: 100vw;
+  max-width: 430px;
+  height: 100vh;
+  background-color: #98e878;
+  background-image:
+    linear-gradient(45deg, rgba(95,150,68,0.35) 25%, transparent 25%),
+    linear-gradient(-45deg, rgba(95,150,68,0.28) 25%, transparent 25%),
+    linear-gradient(45deg, transparent 75%, rgba(120,85,45,0.28) 75%),
+    linear-gradient(-45deg, transparent 75%, rgba(70,130,60,0.28) 75%);
+  background-size: 36px 36px;
+  background-position: 0 0, 0 18px, 18px -18px, -18px 0px;
+  position: relative;
+  overflow: hidden;
+  border-left: 4px solid #111;
+  border-right: 4px solid #111;
+}
+
+#ui {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  z-index: 20;
+  color: white;
+  font-weight: bold;
+  text-shadow: 2px 2px 0 #000;
+  font-size: 18px;
+}
+
+.lane {
+  position: absolute;
+  width: 100%;
+  height: 72px;
+  left: 0;
+  transition: top 0.12s linear;
+}
+
+.road {
+  background: #555;
+  border-top: 3px dashed #ddd;
+  border-bottom: 3px dashed #ddd;
+}
+
+.grass {
+  background-color: #98e878;
+  background-image:
+    linear-gradient(45deg, rgba(95,150,68,0.35) 25%, transparent 25%),
+    linear-gradient(-45deg, rgba(95,150,68,0.28) 25%, transparent 25%),
+    linear-gradient(45deg, transparent 75%, rgba(120,85,45,0.28) 75%),
+    linear-gradient(-45deg, transparent 75%, rgba(70,130,60,0.28) 75%);
+  background-size: 36px 36px;
+  background-position: 0 0, 0 18px, 18px -18px, -18px 0px;
+}
+
+.car,
+.item,
+.dog,
+#player {
+  position: absolute;
+  width: 52px;
+  height: 52px;
+  font-size: 38px;
+  text-align: center;
+  line-height: 52px;
+}
+
+.car img,
+.dog img,
+#player img,
+#ufo img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  pointer-events: none;
+}
+
+.item,
+.dog,
+#player {
+  transition: left 0.08s linear, top 0.12s linear;
+}
+
+.car {
+  z-index: 5;
+  transition: top 0.12s linear;
+}
+
+.item { z-index: 4; }
+.dog { z-index: 3; }
+#player { z-index: 10; 
+          display: none;}
+
+#ufo {
+  position: absolute;
+  width: 104px;
+  height: 104px;
+  z-index: 15;
+  display: none;
+  pointer-events: none;
+}
+
+#warning {
+  position: absolute;
+  top: 40%;
+  left: 0;
+  width: 100%;
+  z-index: 25;
+  text-align: center;
+  font-size: 28px;
+  font-weight: bold;
+  color: yellow;
+  text-shadow: 3px 3px 0 #000;
+  display: none;
+}
+
+#message {
+  position: absolute;
+  inset: 0;
+  z-index: 30;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  color: white;
+  font-weight: bold;
+  font-size: 28px;
+  text-shadow: 3px 3px 0 #000;
+  background: rgba(0,0,0,0.35);
+  line-height: 1.5;
+  padding: 20px;
+}
+
+.hidden {
+  display: none !important;
+}
+
+.titleDog {
+  animation: bounce 1s infinite;
+}
+
+@keyframes bounce {
+  0% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+  100% { transform: translateY(0); }
+}
+
+.smallText {
+  font-size: 16px;
+  margin-top: 20px;
+  line-height: 1.8;
+}
+
+.titleText {
+  font-size: 32px;
+}
+
+.scoreText {
+  font-size: 22px;
+  margin-top: 15px;
+  line-height: 1.6;
+}
+</style>
+</head>
+
+<body>
+
+<div id="game">
+  <div id="ui">
+    SCORE: <span id="score">0</span><br>
+    RESCUE: <span id="rescue">0</span>
+  </div>
+
+  <div id="player">
+    <img src="images/player.png" alt="ぽっちゃん">
+  </div>
+
+  <div id="ufo">
+    <img src="images/ufo.png" alt="UFO">
+  </div>
+
+  <div id="warning">
+    ⚠ WARNING ⚠<br>
+    UFO接近中！
+  </div>
+
+  <div id="message">
+    <div>
+      <div class="titleDog" style="font-size:70px; margin-bottom:10px;">🐶</div>
+      <div class="titleText">ぽっちゃんがレスキュー</div>
+
+      <div class="smallText">
+        困っているワンコを助けながら<br>
+        危険な道路を進もう！<br><br>
+        スマホ<br>
+        左右タップ：移動<br>
+        上スワイプ：前進<br><br>
+        PC<br>
+        ← → ：移動<br>
+        ↑ ：前進<br><br>
+        TAP START
+      </div>
+    </div>
+  </div>
+</div>
+
+<audio id="bgm" src="../bgm/bgm3.mp3" loop></audio>
+
+<script>
+const game = document.getElementById("game");
+const player = document.getElementById("player");
+const scoreEl = document.getElementById("score");
+const rescueEl = document.getElementById("rescue");
+const message = document.getElementById("message");
+const bgm = document.getElementById("bgm");
+const ufo = document.getElementById("ufo");
+const warning = document.getElementById("warning");
+
+const cols = 5;
+const cellW = 70;
+const laneH = 72;
+
+let playerCol = 2;
+let playerRow = 7;
+let score = 0;
+let rescue = 0;
+let running = false;
+let lanes = [];
+let followers = [];
+
+let touchStartX = 0;
+let touchStartY = 0;
+
+let ufoActive = false;
+let ufoX = 0;
+let ufoY = 0;
+let ufoVX = 0;
+let ufoVY = 0;
+let ufoEndTime = 0;
+let nextUfoTime = 0;
+let lastUfoTurn = 0;
+
+let audioContext = null;
+let soundEnabled = true;
+let ufoOsc = null;
+let ufoGain = null;
+let ufoSoundInterval = null;
+
+const dogTypes = [
+  { name: "dog1", file: "images/dog1.png", score: 500 },
+  { name: "dog2", file: "images/dog2.png", score: 500 },
+  { name: "dog3", file: "images/dog3.png", score: 500 },
+  { name: "gold", file: "images/dog_gold.png", score: 3000 }
+];
+
+function getLaneCount() {
+  return Math.ceil(game.clientHeight / laneH) + 2;
+}
+
+function getAudioContext() {
+  if (!audioContext) {
+    audioContext = new (window.AudioContext || window.webkitAudioContext)();
+  }
+
+  if (audioContext.state === "suspended") {
+    audioContext.resume();
+  }
+
+  return audioContext;
+}
+
+function playStepSound() {
+  if (!soundEnabled) return;
+
+  const ctx = getAudioContext();
+  const now = ctx.currentTime;
+  const osc = ctx.createOscillator();
+  const gain = ctx.createGain();
+
+  osc.type = "square";
+  osc.frequency.setValueAtTime(300, now);
+  osc.frequency.exponentialRampToValueAtTime(450, now + 0.08);
+
+  gain.gain.setValueAtTime(0.0001, now);
+  gain.gain.exponentialRampToValueAtTime(0.12, now + 0.01);
+  gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.10);
+
+  osc.connect(gain);
+  gain.connect(ctx.destination);
+
+  osc.start(now);
+  osc.stop(now + 0.10);
+}
+
+function playGetSound() {
+  if (!soundEnabled) return;
+
+  const ctx = getAudioContext();
+  const now = ctx.currentTime;
+
+  [0, 0.06, 0.12].forEach((delay, i) => {
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+
+    osc.type = "square";
+    osc.frequency.setValueAtTime(700 + i * 200, now + delay);
+
+    gain.gain.setValueAtTime(0.12, now + delay);
+    gain.gain.exponentialRampToValueAtTime(0.0001, now + delay + 0.10);
+
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+
+    osc.start(now + delay);
+    osc.stop(now + delay + 0.10);
+  });
+}
+
+function playCrashSound() {
+  if (!soundEnabled) return;
+
+  const ctx = getAudioContext();
+  const now = ctx.currentTime;
+  const osc = ctx.createOscillator();
+  const gain = ctx.createGain();
+
+  osc.type = "sawtooth";
+  osc.frequency.setValueAtTime(400, now);
+  osc.frequency.exponentialRampToValueAtTime(60, now + 0.7);
+
+  gain.gain.setValueAtTime(0.25, now);
+  gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.7);
+
+  osc.connect(gain);
+  gain.connect(ctx.destination);
+
+  osc.start(now);
+  osc.stop(now + 0.7);
+}
+
+function startUfoSound() {
+  if (!soundEnabled || ufoOsc) return;
+
+  const ctx = getAudioContext();
+
+  ufoOsc = ctx.createOscillator();
+  ufoGain = ctx.createGain();
+
+  ufoOsc.type = "sawtooth";
+  ufoOsc.frequency.value = 180;
+  ufoGain.gain.value = 0.055;
+
+  ufoOsc.connect(ufoGain);
+  ufoGain.connect(ctx.destination);
+  ufoOsc.start();
+
+  let high = false;
+
+  ufoSoundInterval = setInterval(() => {
+    if (!ufoOsc) return;
+
+    const now = ctx.currentTime;
+    ufoOsc.frequency.cancelScheduledValues(now);
+    ufoOsc.frequency.setValueAtTime(high ? 260 : 180, now);
+    ufoOsc.frequency.linearRampToValueAtTime(high ? 180 : 260, now + 0.35);
+
+    high = !high;
+  }, 350);
+}
+
+function stopUfoSound() {
+  if (ufoSoundInterval) {
+    clearInterval(ufoSoundInterval);
+    ufoSoundInterval = null;
+  }
+
+  if (ufoOsc) {
+    try { ufoOsc.stop(); } catch(e) {}
+    ufoOsc.disconnect();
+    ufoOsc = null;
+  }
+
+  if (ufoGain) {
+    ufoGain.disconnect();
+    ufoGain = null;
+  }
+}
+
+function startGame() {
+  running = true;
+  player.style.display = "block";
+  score = 0;
+  rescue = 0;
+  playerCol = 2;
+  playerRow = 7;
+  followers = [];
+
+  document.querySelectorAll(".lane, .car, .item, .dog").forEach(el => el.remove());
+
+  lanes = [];
+
+  const laneCount = getLaneCount();
+
+  for (let i = 0; i < laneCount; i++) {
+    createLane(i);
+  }
+
+  resetUfo();
+  scheduleNextUfo();
+
+  updatePlayer();
+  updateUI();
+
+  message.classList.add("hidden");
+
+  bgm.volume = 0.45;
+
+  if (bgm.paused) {
+    bgm.play().catch(() => {});
+  }
+
+  getAudioContext();
+
+  requestAnimationFrame(gameLoop);
+}
+
+function createLane(row) {
+  const lane = document.createElement("div");
+  lane.className = "lane";
+
+  const isRoad = Math.random() < 0.5 && row !== playerRow;
+  lane.classList.add(isRoad ? "road" : "grass");
+
+  lane.style.top = row * laneH + "px";
+  game.appendChild(lane);
+
+  const difficulty = 1 + score / 5000;
+
+  const laneData = {
+    el: lane,
+    row: row,
+    type: isRoad ? "road" : "grass",
+    cars: [],
+    items: [],
+    dogs: [],
+    speed: isRoad ? (2 + Math.random() * 3) * difficulty : 0,
+    dir: Math.random() < 0.5 ? 1 : -1
+  };
+
+  if (isRoad) {
+    const count = 1 + Math.floor(Math.random() * 2);
+
+    for (let i = 0; i < count; i++) {
+      createCar(laneData, i);
+    }
+
+    if (row < playerRow && Math.random() < 0.35) {
+      createRescueDog(laneData);
+    }
+  } else if (row < playerRow) {
+    if (Math.random() < 0.35) {
+      createItem(laneData);
+    }
+  }
+
+  lanes.push(laneData);
+}
+
+function createCar(laneData, i) {
+  const car = document.createElement("div");
+  car.className = "car";
+
+  const vehicleFile = Math.random() < 0.65
+    ? "images/car.png"
+    : "images/bike.png";
+
+  car.innerHTML = `<img src="${vehicleFile}" alt="障害物">`;
+
+  const startX = laneData.dir === 1
+    ? -100 - i * 180
+    : game.clientWidth + i * 180;
+
+  car.style.left = startX + "px";
+  car.style.top = laneData.row * laneH + 10 + "px";
+
+  game.appendChild(car);
+
+  laneData.cars.push({
+    el: car,
+    x: startX
+  });
+}
+
+function createItem(laneData) {
+  const item = document.createElement("div");
+  item.className = "item";
+  item.textContent = Math.random() < 0.7 ? "🦴" : "🍔";
+
+  const col = Math.floor(Math.random() * cols);
+
+  item.dataset.col = col;
+  item.dataset.row = laneData.row;
+
+  item.style.left = getColX(col) + "px";
+  item.style.top = laneData.row * laneH + 10 + "px";
+
+  game.appendChild(item);
+  laneData.items.push(item);
+}
+
+function createRescueDog(laneData) {
+  const dog = document.createElement("div");
+  dog.className = "dog";
+
+  const dogType = dogTypes[Math.floor(Math.random() * dogTypes.length)];
+
+  dog.dataset.type = dogType.name;
+  dog.dataset.file = dogType.file;
+  dog.dataset.score = dogType.score;
+
+  dog.innerHTML = `<img src="${dogType.file}" alt="${dogType.name}">`;
+
+  const col = Math.floor(Math.random() * cols);
+
+  dog.dataset.col = col;
+  dog.dataset.row = laneData.row;
+
+  dog.style.left = getColX(col) + "px";
+  dog.style.top = laneData.row * laneH + 10 + "px";
+
+  game.appendChild(dog);
+  laneData.dogs.push(dog);
+}
+
+function getColX(col) {
+  const totalW = cols * cellW;
+  const startX = (game.clientWidth - totalW) / 2;
+  return startX + col * cellW + 9;
+}
+
+function updatePlayer() {
+  player.style.left = getColX(playerCol) + "px";
+  player.style.top = playerRow * laneH + 10 + "px";
+  updateFollowers();
+}
+
+function updateFollowers() {
+  document.querySelectorAll(".follower").forEach(el => el.remove());
+
+  for (let i = 0; i < followers.length; i++) {
+    const f = document.createElement("div");
+    f.className = "dog follower";
+    f.innerHTML = `<img src="${followers[i].file}" alt="${followers[i].name}">`;
+    f.style.left = getColX(playerCol) + "px";
+    f.style.top = (playerRow + i + 1) * laneH + 10 + "px";
+    game.appendChild(f);
+  }
+}
+
+function moveLeft() {
+  if (!running) return;
+
+  playerCol = Math.max(0, playerCol - 1);
+  updatePlayer();
+
+  checkItems();
+  checkDogs();
+  checkHit();
+  checkUfoHit();
+  updateUI();
+}
+
+function moveRight() {
+  if (!running) return;
+
+  playerCol = Math.min(cols - 1, playerCol + 1);
+  updatePlayer();
+
+  checkItems();
+  checkDogs();
+  checkHit();
+  checkUfoHit();
+  updateUI();
+}
+
+function moveForward() {
+  if (!running) return;
+
+  playStepSound();
+
+  score += 10;
+
+  lanes.forEach(lane => {
+    lane.row += 1;
+    lane.el.style.top = lane.row * laneH + "px";
+
+    lane.cars.forEach(car => {
+      car.el.style.top = lane.row * laneH + 10 + "px";
+    });
+
+    lane.items.forEach(item => {
+      item.dataset.row = lane.row;
+      item.style.top = lane.row * laneH + 10 + "px";
+    });
+
+    lane.dogs.forEach(dog => {
+      dog.dataset.row = lane.row;
+      dog.style.top = lane.row * laneH + 10 + "px";
+    });
+  });
+
+  lanes = lanes.filter(lane => {
+    if (lane.row > getLaneCount()) {
+      lane.el.remove();
+      lane.cars.forEach(car => car.el.remove());
+      lane.items.forEach(item => item.remove());
+      lane.dogs.forEach(dog => dog.remove());
+      return false;
+    }
+
+    return true;
+  });
+
+  createLane(0);
+
+  updateFollowers();
+  checkItems();
+  checkDogs();
+  checkHit();
+  checkUfoHit();
+  updateUI();
+}
+
+function checkItems() {
+  lanes.forEach(lane => {
+    lane.items = lane.items.filter(item => {
+      const col = Number(item.dataset.col);
+      const row = Number(item.dataset.row);
+
+      if (col === playerCol && row === playerRow) {
+        score += item.textContent === "🍔" ? 300 : 100;
+        playGetSound();
+        item.remove();
+        return false;
+      }
+
+      return true;
+    });
+  });
+}
+
+function checkDogs() {
+  lanes.forEach(lane => {
+    lane.dogs = lane.dogs.filter(dog => {
+      const col = Number(dog.dataset.col);
+      const row = Number(dog.dataset.row);
+
+      if (col === playerCol && row === playerRow) {
+        rescue++;
+        score += Number(dog.dataset.score);
+        playGetSound();
+
+        followers.push({
+          name: dog.dataset.type,
+          file: dog.dataset.file
+        });
+
+        dog.remove();
+        return false;
+      }
+
+      return true;
+    });
+  });
+}
+
+function checkHit() {
+  if (!running) return;
+
+  const px = getColX(playerCol) + 26;
+  const py = playerRow * laneH + 36;
+
+  lanes.forEach(lane => {
+    lane.cars.forEach(car => {
+      const rect = car.el.getBoundingClientRect();
+      const gameRect = game.getBoundingClientRect();
+
+      const cx = rect.left - gameRect.left + rect.width / 2;
+      const cy = rect.top - gameRect.top + rect.height / 2;
+
+      const dx = Math.abs(px - cx);
+      const dy = Math.abs(py - cy);
+
+      if (dx < 36 && dy < 32) {
+        gameOver();
+      }
+    });
+  });
+}
+
+function scheduleNextUfo() {
+  const now = performance.now();
+  const delay = 15000 + Math.random() * 10000;
+  nextUfoTime = now + delay;
+}
+
+function resetUfo() {
+  ufoActive = false;
+  ufo.style.display = "none";
+  warning.style.display = "none";
+  stopUfoSound();
+}
+
+function warnUfo() {
+  if (!running || ufoActive) return;
+
+  warning.style.display = "block";
+
+  setTimeout(() => {
+    if (!running) return;
+    warning.style.display = "none";
+    spawnUfo();
+  }, 1000);
+}
+
+function spawnUfo() {
+  ufoActive = true;
+
+  const maxX = game.clientWidth - 104;
+  const maxY = game.clientHeight - 104;
+
+  ufoX = Math.random() * maxX;
+  ufoY = Math.random() * maxY;
+
+  randomizeUfoVelocity();
+
+  ufo.style.left = ufoX + "px";
+  ufo.style.top = ufoY + "px";
+  ufo.style.display = "block";
+
+  startUfoSound();
+
+  ufoEndTime = performance.now() + 6000;
+  lastUfoTurn = performance.now();
+}
+
+function randomizeUfoVelocity() {
+  const speed = 2.5 + Math.random() * 2.5;
+  const angle = Math.random() * Math.PI * 2;
+
+  ufoVX = Math.cos(angle) * speed;
+  ufoVY = Math.sin(angle) * speed;
+}
+
+function updateUfo() {
+  if (!running) return;
+
+  const now = performance.now();
+
+  if (!ufoActive && now >= nextUfoTime) {
+    warnUfo();
+    nextUfoTime = Infinity;
+    return;
+  }
+
+  if (!ufoActive) return;
+
+  if (now - lastUfoTurn > 500 + Math.random() * 500) {
+    randomizeUfoVelocity();
+    lastUfoTurn = now;
+  }
+
+  ufoX += ufoVX;
+  ufoY += ufoVY;
+
+  const maxX = game.clientWidth - 104;
+  const maxY = game.clientHeight - 104;
+
+  if (ufoX < 0) {
+    ufoX = 0;
+    ufoVX *= -1;
+  }
+
+  if (ufoX > maxX) {
+    ufoX = maxX;
+    ufoVX *= -1;
+  }
+
+  if (ufoY < 0) {
+    ufoY = 0;
+    ufoVY *= -1;
+  }
+
+  if (ufoY > maxY) {
+    ufoY = maxY;
+    ufoVY *= -1;
+  }
+
+  ufo.style.left = ufoX + "px";
+  ufo.style.top = ufoY + "px";
+
+  checkUfoHit();
+
+  if (now >= ufoEndTime) {
+    ufoActive = false;
+    ufo.style.display = "none";
+    stopUfoSound();
+    scheduleNextUfo();
+  }
+}
+
+function checkUfoHit() {
+  if (!ufoActive || !running) return;
+
+  const px = getColX(playerCol) + 26;
+  const py = playerRow * laneH + 36;
+
+  const ux = ufoX + 52;
+  const uy = ufoY + 52;
+
+  const dx = Math.abs(px - ux);
+  const dy = Math.abs(py - uy);
+
+  if (dx < 55 && dy < 55) {
+    gameOver();
+  }
+}
+
+function gameOver() {
+  if (!running) return;
+
+  running = false;
+
+  playCrashSound();
+  stopUfoSound();
+
+  message.innerHTML = `
+    <div>
+      <div style="font-size:70px;">😢</div>
+
+      <div class="titleText" style="margin-top:10px;">
+        GAME OVER
+      </div>
+
+      <div class="scoreText">
+        SCORE : ${score}<br>
+        RESCUE : ${rescue}
+      </div>
+
+      <div class="smallText">
+        迷子のワンコを助けながら<br>
+        危険な道路を進もう！<br><br>
+
+        スマホ<br>
+        左右タップ：移動<br>
+        上スワイプ：前進<br><br>
+
+        PC<br>
+        ← → ：移動<br>
+        ↑ ：前進<br><br>
+
+        TAP RESTART
+      </div>
+    </div>
+  `;
+
+  message.classList.remove("hidden");
+}
+
+function updateUI() {
+  scoreEl.textContent = score;
+  rescueEl.textContent = rescue;
+}
+
+function gameLoop() {
+  if (!running) return;
+
+  lanes.forEach(lane => {
+    lane.cars.forEach(car => {
+      car.x += lane.speed * lane.dir;
+      car.el.style.left = car.x + "px";
+
+      if (lane.dir === 1 && car.x > game.clientWidth + 80) {
+        car.x = -120;
+      }
+
+      if (lane.dir === -1 && car.x < -120) {
+        car.x = game.clientWidth + 80;
+      }
+    });
+  });
+
+  updateUfo();
+  checkHit();
+
+  requestAnimationFrame(gameLoop);
+}
+
+game.addEventListener("touchstart", e => {
+  touchStartX = e.touches[0].clientX;
+  touchStartY = e.touches[0].clientY;
+});
+
+game.addEventListener("touchend", e => {
+  if (!running) {
+    startGame();
+    return;
+  }
+
+  const endX = e.changedTouches[0].clientX;
+  const endY = e.changedTouches[0].clientY;
+
+  const diffX = endX - touchStartX;
+  const diffY = endY - touchStartY;
+
+  if (diffY < -40 && Math.abs(diffY) > Math.abs(diffX)) {
+    moveForward();
+    return;
+  }
+
+  if (touchStartX < window.innerWidth / 2) {
+    moveLeft();
+  } else {
+    moveRight();
+  }
+});
+
+game.addEventListener("mousedown", e => {
+  if ("ontouchstart" in window) return;
+
+  if (!running) {
+    startGame();
+    return;
+  }
+
+  if (e.clientX < window.innerWidth / 2) {
+    moveLeft();
+  } else {
+    moveRight();
+  }
+});
+
+document.addEventListener("keydown", e => {
+  if (!running) {
+    if (e.key === "Enter" || e.key === " ") {
+      startGame();
+    }
+    return;
+  }
+
+  if (e.key === "ArrowLeft") {
+    e.preventDefault();
+    moveLeft();
+  }
+
+  if (e.key === "ArrowRight") {
+    e.preventDefault();
+    moveRight();
+  }
+
+  if (e.key === "ArrowUp") {
+    e.preventDefault();
+    moveForward();
+  }
+});
+</script>
+
+</body>
+</html>
