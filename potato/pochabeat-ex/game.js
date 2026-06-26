@@ -629,7 +629,7 @@ function drawHorizonImage(width, height) {
 }
 
 function getHorizonImageForCombo() {
-  const index = Math.min(4, Math.floor(Math.max(0, state.combo - 1) / 25));
+  const index = Math.min(4, Math.floor(Math.max(0, state.combo) / 25));
   const image = horizonImages[index];
   if (image && image.complete && image.naturalWidth > 0) return image;
   return fallbackHorizonImage;
