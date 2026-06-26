@@ -589,10 +589,66 @@ canvas {
 
   .title-panel {
     min-height: calc(100dvh - 12px);
+    grid-template-rows: auto minmax(0, 1fr);
+    align-content: stretch;
+    gap: clamp(14px, 4dvh, 26px);
+    padding: clamp(14px, 4.2vw, 22px);
+  }
+
+  .title-panel::before {
+    inset: auto 4% 30% 4%;
+    height: 24%;
+    transform: perspective(300px) rotateX(58deg);
+  }
+
+  .title-panel::after {
+    inset: auto 0 -3% 0;
+    height: 20%;
+  }
+
+  .title-copy {
+    align-self: end;
+    padding-top: clamp(10px, 5dvh, 34px);
+  }
+
+  .game-title {
+    font-size: clamp(2.35rem, 12.5vw, 3.35rem);
+    line-height: 1;
+    max-width: 100%;
+    overflow: visible;
+    white-space: normal;
+    overflow-wrap: anywhere;
   }
 
   .song-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    align-self: end;
+    grid-template-columns: 1fr;
+    gap: 8px;
+    min-height: 0;
+  }
+
+  .song-card {
+    min-height: clamp(58px, 10.5dvh, 76px);
+    grid-template-columns: auto minmax(0, 1fr);
+    gap: 10px;
+    align-content: center;
+    align-items: center;
+    padding: 10px 12px;
+    text-align: left;
+  }
+
+  .song-card span {
+    display: inline-grid;
+    width: 2.25rem;
+    height: 2.25rem;
+    place-items: center;
+    border: 1px solid rgba(142, 155, 180, 0.38);
+    background: rgba(45, 226, 255, 0.08);
+  }
+
+  .song-card strong {
+    font-size: clamp(0.9rem, 4vw, 1.05rem);
+    line-height: 1.08;
   }
 
   .play-area {
