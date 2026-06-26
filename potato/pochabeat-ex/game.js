@@ -1,4 +1,4 @@
-const audioFile = "./ぽっちゃん注意報.mp3";
+const audioFile = "./song.mp3";
 const titleScreen = document.querySelector("#title-screen");
 const gameScreen = document.querySelector("#game-screen");
 const canvas = document.querySelector("#stage");
@@ -24,10 +24,18 @@ const keys = new Map([
 ]);
 
 const laneColors = ["#ff5f9b", "#ffd166", "#37ddb5", "#4cc9f0"];
-const horizonImage = new Image();
-horizonImage.src = "./images/bg.png";
-horizonImage.addEventListener("load", () => {
+const fallbackHorizonImage = new Image();
+fallbackHorizonImage.src = "./images/bg.png";
+fallbackHorizonImage.addEventListener("load", () => {
   if (!state.running) drawIdle();
+});
+const horizonImages = ["bg1.png", "bg2.png", "bg3.png", "bg4.png", "bg5.png"].map((fileName) => {
+  const image = new Image();
+  image.src = `./images/${fileName}`;
+  image.addEventListener("load", () => {
+    if (!state.running) drawIdle();
+  });
+  return image;
 });
 const sideImage = new Image();
 sideImage.src = "./images/side.png";
@@ -603,6 +611,7 @@ function drawSideImages(width, height) {
 }
 
 function drawHorizonImage(width, height) {
+  const horizonImage = getHorizonImageForCombo();
   if (!horizonImage.complete || horizonImage.naturalWidth === 0) return;
 
   const centerX = width / 2;
@@ -617,6 +626,13 @@ function drawHorizonImage(width, height) {
   ctx.globalAlpha = 0.9;
   ctx.drawImage(horizonImage, 0, cropTop, horizonImage.naturalWidth, cropHeight, x, y, imageSize, imageSize);
   ctx.restore();
+}
+
+function getHorizonImageForCombo() {
+  const index = Math.min(4, Math.floor(Math.max(0, state.combo - 1) / 25));
+  const image = horizonImages[index];
+  if (image && image.complete && image.naturalWidth > 0) return image;
+  return fallbackHorizonImage;
 }
 
 function drawSpaceField(width, height, visualTime) {
