@@ -613,6 +613,62 @@ canvas {
   .stats {
     text-align: left;
   }
+
+  .lane-key {
+    border-color: rgba(255, 255, 255, 0.5);
+    box-shadow: inset 0 0 18px rgba(255, 255, 255, 0.1);
+  }
+
+  .lane-key:nth-child(1) {
+    background:
+      linear-gradient(180deg, rgba(255, 255, 255, 0.22), rgba(255, 255, 255, 0)),
+      #ff5f9b;
+    box-shadow:
+      0 0 18px rgba(255, 95, 155, 0.35),
+      inset 0 0 18px rgba(255, 255, 255, 0.12);
+  }
+
+  .lane-key:nth-child(2) {
+    background:
+      linear-gradient(180deg, rgba(255, 255, 255, 0.22), rgba(255, 255, 255, 0)),
+      #ffd166;
+    box-shadow:
+      0 0 18px rgba(255, 209, 102, 0.35),
+      inset 0 0 18px rgba(255, 255, 255, 0.12);
+  }
+
+  .lane-key:nth-child(3) {
+    background:
+      linear-gradient(180deg, rgba(255, 255, 255, 0.22), rgba(255, 255, 255, 0)),
+      #37ddb5;
+    box-shadow:
+      0 0 18px rgba(55, 221, 181, 0.35),
+      inset 0 0 18px rgba(255, 255, 255, 0.12);
+  }
+
+  .lane-key:nth-child(4) {
+    background:
+      linear-gradient(180deg, rgba(255, 255, 255, 0.22), rgba(255, 255, 255, 0)),
+      #4cc9f0;
+    box-shadow:
+      0 0 18px rgba(76, 201, 240, 0.35),
+      inset 0 0 18px rgba(255, 255, 255, 0.12);
+  }
+
+  .lane-key span {
+    width: 100%;
+    height: 100%;
+    border-radius: 0;
+    background: transparent;
+    color: transparent;
+    font-size: 0;
+  }
+
+  .lane-key.is-down {
+    border-color: rgba(255, 255, 255, 0.88);
+    filter: brightness(1.24);
+    transform: translateY(1px);
+  }
 }
 
 @media (max-height: 640px) {
