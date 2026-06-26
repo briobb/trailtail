@@ -347,7 +347,7 @@ canvas {
   background: rgba(8, 11, 21, 0.9);
   color: var(--text);
   cursor: pointer;
-  touch-action: manipulation;
+  touch-action: none;
 }
 
 .lane-key span {
