@@ -632,7 +632,13 @@ function drawHorizonImageLayer(horizonImage, width, height, alpha) {
   const centerX = width / 2;
   const imageSize = Math.min(width * 0.756, height * 0.4515);
   const x = centerX - imageSize / 2;
-  const y = -imageSize * 0.1 + (horizonImage === horizonImages[0] ? imageSize * 0.08 : 0);
+  const imageOffsetY =
+    horizonImage === horizonImages[0]
+      ? imageSize * 0.08
+      : horizonImage === horizonImages[2] || horizonImage === horizonImages[3]
+        ? imageSize * 0.03
+        : 0;
+  const y = -imageSize * 0.1 + imageOffsetY;
   const cropTop = horizonImage.naturalHeight * 0.1;
   const cropHeight = horizonImage.naturalHeight - cropTop;
 
