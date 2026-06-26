@@ -1,4 +1,16 @@
-const audioFile = "./song.mp3";
+const songs = {
+  warning: {
+    title: "ぽっちゃん注意報",
+    audioFile: "./song.mp3",
+    chartFile: "./chart.json",
+  },
+  shakure: {
+    title: "shakure",
+    audioFile: "./shakure.mp3",
+    chartFile: "./shakure-chart.json",
+  },
+};
+let selectedSong = songs.warning;
 const titleScreen = document.querySelector("#title-screen");
 const gameScreen = document.querySelector("#game-screen");
 const canvas = document.querySelector("#stage");
@@ -13,6 +25,7 @@ const screenFlash = document.querySelector("#screen-flash");
 const judgementPop = document.querySelector("#judgement-pop");
 const comboPop = document.querySelector("#combo-pop");
 const resultLabel = document.querySelector("#result-label");
+const currentSongTitle = document.querySelector(".song-title h1");
 const laneButtons = [...document.querySelectorAll(".lane-key")];
 const songButtons = [...document.querySelectorAll(".song-card.is-ready")];
 
@@ -86,6 +99,11 @@ startButton.addEventListener("click", startGame);
 
 songButtons.forEach((button) => {
   button.addEventListener("click", () => {
+    selectedSong = songs[button.dataset.song];
+    state.buffer = null;
+    state.notes = [];
+    state.sections = [];
+    currentSongTitle.textContent = selectedSong.title;
     titleScreen.classList.add("is-hidden");
     gameScreen.classList.remove("is-hidden");
     resizeCanvas();
@@ -127,10 +145,11 @@ async function startGame() {
     await ensureAudioContextRunning();
 
     if (!state.buffer) {
-      const response = await fetch(audioFile);
+      const response = await fetch(selectedSong.audioFile);
+      if (!response.ok) throw new Error(`Audio load failed: ${response.status}`);
       const arrayBuffer = await response.arrayBuffer();
       state.buffer = await state.audioContext.decodeAudioData(arrayBuffer);
-      const manualChart = await loadManualChart();
+      const manualChart = await loadManualChart(selectedSong.chartFile);
       if (manualChart) {
         state.notes = manualChart.notes;
         state.sections = manualChart.sections;
@@ -214,9 +233,9 @@ function resetScore() {
   updateHud("Ready");
 }
 
-async function loadManualChart() {
+async function loadManualChart(chartFile) {
   try {
-    const response = await fetch(`./chart.json?cache=${Date.now()}`, { cache: "no-store" });
+    const response = await fetch(`${chartFile}?cache=${Date.now()}`, { cache: "no-store" });
     if (!response.ok) return null;
     const chart = await response.json();
     const rawNotes = Array.isArray(chart) ? chart : chart.notes;
