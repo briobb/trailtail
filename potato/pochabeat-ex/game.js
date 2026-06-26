@@ -68,6 +68,9 @@ const state = {
   finished: false,
   loop: null,
   perfectClear: true,
+  horizonImageIndex: 0,
+  previousHorizonImageIndex: 0,
+  horizonFadeStart: -Infinity,
 };
 
 bestEl.textContent = state.best.toLocaleString();
@@ -611,9 +614,21 @@ function drawSideImages(width, height) {
 }
 
 function drawHorizonImage(width, height) {
-  const horizonImage = getHorizonImageForCombo();
-  if (!horizonImage.complete || horizonImage.naturalWidth === 0) return;
+  updateHorizonImageTransition();
+  const horizonImage = getLoadedHorizonImage(state.horizonImageIndex);
+  if (!horizonImage) return;
+  const previousImage = getLoadedHorizonImage(state.previousHorizonImageIndex);
+  const fadeDuration = 420;
+  const fadeProgress = Math.min(1, Math.max(0, (performance.now() - state.horizonFadeStart) / fadeDuration));
 
+  if (previousImage && previousImage !== horizonImage && fadeProgress < 1) {
+    drawHorizonImageLayer(previousImage, width, height, 0.9 * (1 - fadeProgress));
+  }
+
+  drawHorizonImageLayer(horizonImage, width, height, 0.9 * fadeProgress);
+}
+
+function drawHorizonImageLayer(horizonImage, width, height, alpha) {
   const centerX = width / 2;
   const imageSize = Math.min(width * 0.756, height * 0.4515);
   const x = centerX - imageSize / 2;
@@ -623,16 +638,25 @@ function drawHorizonImage(width, height) {
 
   ctx.save();
   ctx.globalCompositeOperation = "lighter";
-  ctx.globalAlpha = 0.9;
+  ctx.globalAlpha = alpha;
   ctx.drawImage(horizonImage, 0, cropTop, horizonImage.naturalWidth, cropHeight, x, y, imageSize, imageSize);
   ctx.restore();
 }
 
-function getHorizonImageForCombo() {
-  const index = Math.min(4, Math.floor(Math.max(0, state.combo) / 25));
+function updateHorizonImageTransition() {
+  const nextIndex = Math.min(4, Math.floor(Math.max(0, state.combo) / 25));
+  if (nextIndex === state.horizonImageIndex) return;
+
+  state.previousHorizonImageIndex = state.horizonImageIndex;
+  state.horizonImageIndex = nextIndex;
+  state.horizonFadeStart = performance.now();
+}
+
+function getLoadedHorizonImage(index) {
   const image = horizonImages[index];
   if (image && image.complete && image.naturalWidth > 0) return image;
-  return fallbackHorizonImage;
+  if (fallbackHorizonImage.complete && fallbackHorizonImage.naturalWidth > 0) return fallbackHorizonImage;
+  return null;
 }
 
 function drawSpaceField(width, height, visualTime) {
