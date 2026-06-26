@@ -575,7 +575,7 @@ function drawSideImages(width, height) {
 
   const imageSize = Math.min(width * 0.3696, height * 0.4224);
   const x = imageSize * 0.02;
-  const y = height * 0.26;
+  const y = height * (width <= 820 ? 0.34 : 0.26);
 
   ctx.save();
   ctx.globalCompositeOperation = "lighter";
