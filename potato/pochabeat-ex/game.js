@@ -113,9 +113,7 @@ async function startGame() {
     startButton.querySelector("span").textContent = "START";
     startButton.querySelector("small").textContent = "Loading...";
 
-    if (!state.audioContext) {
-      state.audioContext = new AudioContext();
-    }
+    await ensureAudioContextRunning();
 
     if (!state.buffer) {
       const response = await fetch(audioFile);
@@ -152,12 +150,10 @@ async function startGame() {
       }
     }, 1000 / 60);
 
+    await ensureAudioContextRunning();
     state.startTime = state.audioContext.currentTime + 0.08;
     state.startPerf = performance.now() + 80;
     state.source.start(state.startTime);
-    state.audioContext.resume().catch((error) => {
-      console.error(error);
-    });
   } catch (error) {
     state.running = false;
     clearInterval(state.loop);
@@ -166,6 +162,20 @@ async function startGame() {
     startButton.querySelector("small").textContent = "音源を読み込めませんでした";
     updateHud("Error");
     console.error(error);
+  }
+}
+
+async function ensureAudioContextRunning() {
+  if (!state.audioContext) {
+    const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+    if (!AudioContextClass) {
+      throw new Error("Web Audio API is not supported.");
+    }
+    state.audioContext = new AudioContextClass();
+  }
+
+  if (state.audioContext.state === "suspended") {
+    await state.audioContext.resume();
   }
 }
 
