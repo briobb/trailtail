@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <title>ぽっちゃんビートEX</title>
+    <link rel="stylesheet" href="styles.css">
+  </head>
+  <body>
+    <main id="title-screen" class="title-screen">
+      <section class="title-panel" aria-label="Song select">
+        <div class="title-copy">
+          <p class="label">Retro Future Rhythm</p>
+          <h1 class="game-title">ぽっちゃんビートEX</h1>
+        </div>
+        <div class="song-grid" aria-label="Song list">
+          <button class="song-card is-ready" data-song="warning" type="button">
+            <span>01</span>
+            <strong>ぽっちゃん注意報</strong>
+          </button>
+          <button class="song-card" type="button" disabled>
+            <span>02</span>
+            <strong>COMING SOON</strong>
+          </button>
+          <button class="song-card" type="button" disabled>
+            <span>03</span>
+            <strong>COMING SOON</strong>
+          </button>
+          <button class="song-card" type="button" disabled>
+            <span>04</span>
+            <strong>COMING SOON</strong>
+          </button>
+        </div>
+      </section>
+    </main>
+
+    <main id="game-screen" class="game-shell is-hidden">
+      <section class="play-area" aria-label="Rhythm game">
+        <div class="topbar">
+          <div class="song-title">
+            <p class="label">Now Playing</p>
+            <h1>ぽっちゃん注意報</h1>
+          </div>
+          <div class="stats">
+            <div>
+              <span class="label">Score</span>
+              <strong id="score">0</strong>
+            </div>
+            <div>
+              <span class="label">Combo</span>
+              <strong id="combo">0</strong>
+            </div>
+            <div>
+              <span class="label">Best</span>
+              <strong id="best">0</strong>
+            </div>
+          </div>
+        </div>
+
+        <div class="stage-wrap">
+          <canvas id="stage" width="720" height="960"></canvas>
+          <div id="hit-flash" class="hit-flash"></div>
+          <div id="screen-flash" class="screen-flash"></div>
+          <div id="judgement-pop" class="judgement-pop">NICE</div>
+          <div id="combo-pop" class="combo-pop">20 COMBO!</div>
+          <button id="start" class="start-panel" type="button">
+            <strong id="result-label" class="result-label"></strong>
+            <span>START</span>
+            <small></small>
+          </button>
+        </div>
+
+        <div class="controls" aria-label="Controls">
+          <button class="lane-key" data-lane="0" type="button"><span>D</span></button>
+          <button class="lane-key" data-lane="1" type="button"><span>F</span></button>
+          <button class="lane-key" data-lane="2" type="button"><span>J</span></button>
+          <button class="lane-key" data-lane="3" type="button"><span>K</span></button>
+        </div>
+
+        <div class="meter">
+          <div id="progress"></div>
+        </div>
+      </section>
+    </main>
+
+    <script src="game.js?v=44"></script>
+  </body>
+</html>
